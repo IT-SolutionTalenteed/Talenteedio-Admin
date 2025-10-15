@@ -55,19 +55,47 @@ export const auth = async (context: Context) => {
   const { accessToken, refreshToken } = storeToRefs(authStore);
   const { isAuth } = storeToRefs(useAuthConfigStore());
 
+  console.log('[AUTH MIDDLEWARE] Starting auth check', {
+    hasAccessToken: !!accessToken.value,
+    isAuth: isAuth.value,
+    queryTokens: {
+      accessToken: !!context.to.query.accessToken,
+      refreshToken: !!context.to.query.refreshToken
+    }
+  });
+
+  // Récupérer les tokens depuis l'URL si présents
   if (!accessToken.value && (context.to.query.accessToken || context.to.query.refreshToken)) {
+    console.log('[AUTH MIDDLEWARE] Setting tokens from URL');
     accessToken.value = context.to.query.accessToken as string;
     refreshToken.value = context.to.query.refreshToken as string;
+    
+    // Sauvegarder dans localStorage pour persistance
+    const authData = {
+      token: accessToken.value,
+      refreshToken: refreshToken.value,
+      user: null
+    };
+    localStorage.setItem('auth', JSON.stringify(authData));
+    console.log('[AUTH MIDDLEWARE] Tokens saved to localStorage');
   }
 
   if (accessToken.value && isAuth.value) {
+    console.log('[AUTH MIDDLEWARE] Already authenticated, proceeding');
     return context.next();
-  } else if (accessToken.value && (await verify())) {
-    isAuth.value = true;
-
-    return context.next();
+  } else if (accessToken.value) {
+    console.log('[AUTH MIDDLEWARE] Verifying token...');
+    const verifyResult = await verify();
+    console.log('[AUTH MIDDLEWARE] Verify result:', verifyResult);
+    
+    if (verifyResult) {
+      isAuth.value = true;
+      console.log('[AUTH MIDDLEWARE] Verification successful, proceeding');
+      return context.next();
+    }
   }
 
+  console.log('[AUTH MIDDLEWARE] Authentication failed, redirecting to sign-in');
   window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
 
   return context.next(false);
