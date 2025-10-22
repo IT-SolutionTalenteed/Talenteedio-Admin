@@ -65,7 +65,7 @@ export const auth = async (context: Context) => {
   });
 
   // Récupérer les tokens depuis l'URL si présents
-  if (!accessToken.value && (context.to.query.accessToken || context.to.query.refreshToken)) {
+  if (context.to.query.accessToken || context.to.query.refreshToken) {
     console.log('[AUTH MIDDLEWARE] Setting tokens from URL');
     accessToken.value = context.to.query.accessToken as string;
     refreshToken.value = context.to.query.refreshToken as string;
@@ -78,6 +78,10 @@ export const auth = async (context: Context) => {
     };
     localStorage.setItem('auth', JSON.stringify(authData));
     console.log('[AUTH MIDDLEWARE] Tokens saved to localStorage');
+    
+    // Nettoyer l'URL en supprimant les query params
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, '', cleanUrl);
   }
 
   if (accessToken.value && isAuth.value) {

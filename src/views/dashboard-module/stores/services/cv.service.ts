@@ -6,15 +6,17 @@ export const getCVs = async (
   limit: number | null,
   page: number | null,
   search: string | null,
-  talentId?: string
+  talentId?: string,
+  freelanceId?: string
 ) => {
   const talent_id = talentId ? `"${talentId}"` : null;
+  const freelance_id = freelanceId ? `"${freelanceId}"` : null;
 
   const query = gql`
     {
       results: getCVs (input: { limit: ${limit}, page: ${page} }, filter: { title: "${
     search ? search : ''
-  }", talentId: ${talent_id} }) {
+  }", talentId: ${talent_id}, freelanceId: ${freelance_id} }) {
         rows {
           id
           title

@@ -166,14 +166,14 @@
                   <RouterLink
                     v-if="cvRoute"
                     class="dropdown-item"
-                    :to="{ name: cvRoute, query: { talent_id: row.id } }"
+                    :to="{ name: cvRoute, query: row.isTalent ? { talent_id: row.id } : { freelance_id: row.id } }"
                   >
                     CV
                   </RouterLink>
                   <RouterLink
                     v-if="lmRoute"
                     class="dropdown-item"
-                    :to="{ name: lmRoute, query: { talent_id: row.id } }"
+                    :to="{ name: lmRoute, query: row.isTalent ? { talent_id: row.id } : { freelance_id: row.id } }"
                   >
                     LM
                   </RouterLink>

@@ -44,6 +44,9 @@ const authStore = useAuthStore();
 const { is } = authStore;
 
 const getData = async (limit: number | null, page: number | null, search: string | null) => {
-  return await getCVs(limit, page, search, useRoute()?.query?.talent_id as string | undefined);
+  const route = useRoute();
+  const talentId = route?.query?.talent_id as string | undefined;
+  const freelanceId = route?.query?.freelance_id as string | undefined;
+  return await getCVs(limit, page, search, talentId, freelanceId);
 };
 </script>

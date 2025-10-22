@@ -24,6 +24,8 @@ import HrFirstClubForm from './views/hrFirstClub/HrFirstClubForm.vue';
 import TalentList from './views/talent/TalentList.vue';
 import TalentForm from './views/talent/TalentForm.vue';
 import TalentCategoryList from './views/talent/TalentCategoryList.vue';
+import FreelanceList from './views/freelance/FreelanceList.vue';
+import FreelanceForm from './views/freelance/FreelanceForm.vue';
 import LocationList from './views/location/LocationList.vue';
 import ReferredList from './views/referred/ReferredList.vue';
 import JobApplicationDetail from './views/job/JobApplicationDetail.vue';
@@ -209,6 +211,31 @@ const routes: RouteRecordRaw = {
           path: 'category',
           name: 'talent.category',
           component: TalentCategoryList
+        }
+      ]
+    },
+    {
+      path: 'freelance',
+      name: 'freelance',
+      redirect: { name: 'freelance.list' },
+      meta: {
+        middleware: [access('admin')]
+      },
+      children: [
+        {
+          path: '',
+          name: 'freelance.list',
+          component: FreelanceList
+        },
+        {
+          path: 'add',
+          name: 'freelance.add',
+          component: FreelanceForm
+        },
+        {
+          path: 'edit/:id',
+          name: 'freelance.edit',
+          component: FreelanceForm
         }
       ]
     },

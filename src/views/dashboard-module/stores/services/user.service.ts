@@ -89,6 +89,11 @@ export const getUser = async (id: string) => {
         roles {
           name
         }
+        profilePicture {
+          id
+          fileUrl
+          fileName
+        }
       }
     }
   `;

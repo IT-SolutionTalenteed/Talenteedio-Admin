@@ -2,6 +2,12 @@
   <form class="card" @submit.prevent="save">
     <div class="card-header">User information</div>
     <div class="card-body">
+      <ProfilePictureUpload
+        v-model="user.profilePictureUrl"
+        @pictureChanged="onProfilePictureChanged"
+        @pictureRemoved="onProfilePictureRemoved"
+      />
+      
       <div class="row">
         <div class="col-md-6 mb-4">
           <TextInput
@@ -93,6 +99,7 @@ import TextInput from '@/components/inputs/TextInput.vue';
 import PasswordInput from '@/components/inputs/PasswordInput.vue';
 import MultiSelectInput from '@/components/inputs/MultiSelectInput.vue';
 import SubmitButton from '@/components/inputs/SubmitButton.vue';
+import ProfilePictureUpload from '@/components/inputs/ProfilePictureUpload.vue';
 
 const authStore = useAuthStore();
 const { is } = authStore;
@@ -113,7 +120,9 @@ const user = ref<any>(
         role: 'other',
         password: undefined,
         confirmPassword: undefined,
-        oldPassword: undefined
+        oldPassword: undefined,
+        profilePictureId: undefined,
+        profilePictureUrl: undefined
       }
 );
 
@@ -124,19 +133,50 @@ if (props.id && !user.value) {
     user.value.roles && user.value.roles.map((role: any) => role.name).includes('admin')
       ? 'admin'
       : 'other';
+  
+  // Initialiser l'URL de la photo de profil
+  if (user.value.profilePicture) {
+    user.value.profilePictureUrl = user.value.profilePicture.fileUrl;
+    user.value.profilePictureId = user.value.profilePicture.id;
+  }
 }
 
 const isLoading = ref(false);
+
+const onProfilePictureChanged = (mediaId: string, fileUrl: string) => {
+  user.value.profilePictureId = mediaId;
+  user.value.profilePictureUrl = fileUrl;
+};
+
+const onProfilePictureRemoved = () => {
+  user.value.profilePictureId = null;
+  user.value.profilePictureUrl = null;
+};
 
 const save = async () => {
   isLoading.value = true;
 
   user.value.password = user.value.password || undefined;
   user.value.roles = undefined;
+  
+  // Préparer les données pour l'envoi
+  const userData = {
+    ...user.value,
+    profilePicture: user.value.profilePictureId ? { id: user.value.profilePictureId } : null
+  };
+  
+  // Supprimer les champs temporaires
+  delete userData.profilePictureUrl;
+  delete userData.profilePictureId;
 
-  const { data: newData } = props.id ? await updateUser(user.value) : await createUser(user.value);
+  const { data: newData } = props.id ? await updateUser(userData) : await createUser(userData);
 
   if (newData?.result?.id) {
+    // Si c'est le profil de l'utilisateur connecté, mettre à jour le store d'authentification
+    if (props.id && props.id === authStore.user?.id) {
+      authStore.user = newData.result;
+    }
+    
     router.push({ name: 'user.list' });
   }
 

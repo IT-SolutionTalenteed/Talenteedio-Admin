@@ -10,6 +10,9 @@ export const uploadMedia = async (file: any, type = 'image') => {
     mutation ${method}($file: Upload!) {
       result: ${method}(input: $file) {
         id
+        fileUrl
+        fileName
+        fileType
       }
     }
   `;

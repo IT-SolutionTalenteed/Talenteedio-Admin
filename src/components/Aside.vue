@@ -106,6 +106,10 @@ if (is('admin')) {
           route: { name: 'talent' }
         },
         {
+          label: 'Freelance',
+          route: { name: 'freelance' }
+        },
+        {
           label: 'First club',
           route: { name: 'hr-first-club' }
         },
