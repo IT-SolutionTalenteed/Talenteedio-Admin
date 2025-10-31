@@ -57,6 +57,21 @@ export const sendGraphQLRequest = async (
 
           resetAuth();
           window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
+        } else if ([500].includes(error.extensions?.statusCode)) {
+          // Cas spécial pour matchCVWithJob/cv matcher, message plus informatif
+          if (query?.loc?.source?.body?.includes('matchCVWithJob')) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur serveur (CV Matching)',
+              html: `<b>Impossible de valider votre CV en ce moment.</b><br><br>Causes possibles :<ul><li>La clé OpenAI n'est pas configurée côté serveur</li><li>Le format de votre CV n'est pas supporté (seuls PDF ou DOCX)</li><li>Impossible de contacter l'IA pour analyser le CV</li><li>Un bug sur le serveur matching</li></ul>Contactez le support si l'erreur persiste.`
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Erreur serveur',
+              text: error.message || 'Une erreur interne est survenue (500).'
+            });
+          }
         } else if ([422].includes(error.extensions?.statusCode)) {
           Swal.fire({
             icon: 'warning',
