@@ -244,7 +244,7 @@ const routes: RouteRecordRaw = {
       name: 'article',
       redirect: { name: 'article.list' },
       meta: {
-        middleware: [access('admin | company')]
+        middleware: [access('admin')]
       },
       children: [
         {
@@ -414,7 +414,7 @@ const routes: RouteRecordRaw = {
           path: 'add',
           name: 'job.add',
           meta: {
-            middleware: [access('admin')]
+            middleware: [access('admin | company')]
           },
           component: JobForm
         },
@@ -422,7 +422,7 @@ const routes: RouteRecordRaw = {
           path: 'edit/:id',
           name: 'job.edit',
           meta: {
-            middleware: [access('admin')]
+            middleware: [access('admin | company')]
           },
           component: JobForm
         },

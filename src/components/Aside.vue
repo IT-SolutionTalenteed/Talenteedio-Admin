@@ -216,11 +216,6 @@ if (is('admin')) {
       icon: 'bi bi-person'
     },
     {
-      label: 'Article',
-      route: { name: 'article' },
-      icon: 'bi bi-file-text'
-    },
-    {
       label: 'Job',
       route: { name: 'job' },
       icon: 'bi bi-bag'

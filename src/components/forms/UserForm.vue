@@ -2,12 +2,6 @@
   <form class="card" @submit.prevent="save">
     <div class="card-header">User information</div>
     <div class="card-body">
-      <ProfilePictureUpload
-        v-model="user.profilePictureUrl"
-        @pictureChanged="onProfilePictureChanged"
-        @pictureRemoved="onProfilePictureRemoved"
-      />
-      
       <div class="row">
         <div class="col-md-6 mb-4">
           <TextInput

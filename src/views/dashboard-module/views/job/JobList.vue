@@ -40,7 +40,7 @@
   <PageHeader
     title="List of jobs"
     page="Jobs"
-    :rightButton="is('admin') ? [{ route: 'job.add', label: 'Create' }] : []"
+    :rightButton="is('admin') || is('company') ? [{ route: 'job.add', label: 'Create' }] : []"
   />
 
   <div class="page-body">
@@ -65,7 +65,7 @@
           }
         })
       }"
-      :edit-route="is('admin') ? 'job.edit' : ''"
+      :edit-route="is('admin') || is('company') ? 'job.edit' : ''"
       :can-delete="is('admin')"
       application-route="job.application"
       :delete-data="deleteJob"
