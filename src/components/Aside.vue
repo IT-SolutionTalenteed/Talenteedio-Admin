@@ -110,6 +110,10 @@ if (is('admin')) {
           route: { name: 'freelance' }
         },
         {
+          label: 'Consultant',
+          route: { name: 'consultant' }
+        },
+        {
           label: 'First club',
           route: { name: 'hr-first-club' }
         },

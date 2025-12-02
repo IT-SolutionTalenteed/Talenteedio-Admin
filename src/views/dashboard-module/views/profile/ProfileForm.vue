@@ -6,6 +6,7 @@
     <CompanyForm v-if="is('company')" :id="user!.company!.id" />
     <ReferralForm v-if="is('referral')" :id="user!.referral!.id" />
     <TalentForm v-if="is('talent')" :id="user!.talent!.id" />
+    <ConsultantForm v-if="is('consultant')" :id="user!.consultant!.id" />
   </div>
 </template>
 
@@ -17,6 +18,7 @@ import UserForm from '@/components/forms/UserForm.vue';
 import CompanyForm from '@/components/forms/CompanyForm.vue';
 import ReferralForm from '@/components/forms/ReferralForm.vue';
 import TalentForm from '@/components/forms/TalentForm.vue';
+import ConsultantForm from '@/components/forms/ConsultantForm.vue';
 
 import { useAuthStore } from '@/views/auth-module/stores/auth.store';
 

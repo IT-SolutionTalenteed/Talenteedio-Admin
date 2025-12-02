@@ -36,7 +36,7 @@ export const useAuthStore = defineStore(
       }
     }
 
-    const is = (role: 'admin' | 'company' | 'talent' | 'referral' | 'hr-first-club') => {
+    const is = (role: 'admin' | 'company' | 'talent' | 'referral' | 'hr-first-club' | 'consultant') => {
       return user.value?.roles.filter((r) => r.name === role)?.length ? true : false;
     };
 
@@ -46,9 +46,10 @@ export const useAuthStore = defineStore(
         !is('company') &&
         !is('talent') &&
         !is('referral') &&
-        !is('hr-first-club')
+        !is('hr-first-club') &&
+        !is('consultant')
       ) {
-        window.location.href = import.meta.env.VITE_HOST_URL + '/home';
+        window.location.href = import.meta.env.VITE_HOST_URL + '/admin/authentication/sign-in';
         return;
       }
 
@@ -198,7 +199,7 @@ export const useAuthStore = defineStore(
           timer: 3000 // Adjust the duration as needed
         });
 
-        window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
+        window.location.href = import.meta.env.VITE_HOST_URL + '/admin/authentication/sign-in';
       } else {
         isLoading.value = false;
       }

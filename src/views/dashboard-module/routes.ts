@@ -1,6 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router';
 
 import { access } from '@/router/middlware';
+import { useAuthStore } from '@/views/auth-module/stores/auth.store';
 
 import Layout from './Layout.vue';
 import UserList from './views/user/UserList.vue';
@@ -26,6 +27,8 @@ import TalentForm from './views/talent/TalentForm.vue';
 import TalentCategoryList from './views/talent/TalentCategoryList.vue';
 import FreelanceList from './views/freelance/FreelanceList.vue';
 import FreelanceForm from './views/freelance/FreelanceForm.vue';
+import ConsultantList from './views/consultant/ConsultantList.vue';
+import ConsultantForm from './views/consultant/ConsultantForm.vue';
 import LocationList from './views/location/LocationList.vue';
 import ReferredList from './views/referred/ReferredList.vue';
 import JobApplicationDetail from './views/job/JobApplicationDetail.vue';
@@ -93,7 +96,7 @@ const routes: RouteRecordRaw = {
       path: 'profile',
       name: 'profile',
       meta: {
-        middleware: [access('company | talent | referral | hr-first-club')]
+        middleware: [access('company | talent | referral | hr-first-club | consultant')]
       },
       component: ProfileForm
     },
@@ -236,6 +239,31 @@ const routes: RouteRecordRaw = {
           path: 'edit/:id',
           name: 'freelance.edit',
           component: FreelanceForm
+        }
+      ]
+    },
+    {
+      path: 'consultant',
+      name: 'consultant',
+      redirect: { name: 'consultant.list' },
+      meta: {
+        middleware: [access('admin')]
+      },
+      children: [
+        {
+          path: '',
+          name: 'consultant.list',
+          component: ConsultantList
+        },
+        {
+          path: 'add',
+          name: 'consultant.add',
+          component: ConsultantForm
+        },
+        {
+          path: 'edit/:id',
+          name: 'consultant.edit',
+          component: ConsultantForm
         }
       ]
     },

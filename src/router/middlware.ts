@@ -100,7 +100,7 @@ export const auth = async (context: Context) => {
   }
 
   console.log('[AUTH MIDDLEWARE] Authentication failed, redirecting to sign-in');
-  window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
+  window.location.href = import.meta.env.VITE_HOST_URL + '/admin/authentication/sign-in';
 
   return context.next(false);
 };
@@ -157,6 +157,14 @@ export const access = (roleAllowed: string) => {
           return is('talent') || is('referral') || is('company') || is('hr-first-club')
             ? context.next()
             : context.next(redirect_route);
+
+        case 'company | talent | referral | hr-first-club | consultant':
+          return is('talent') || is('referral') || is('company') || is('hr-first-club') || is('consultant')
+            ? context.next()
+            : context.next(redirect_route);
+
+        case 'consultant':
+          return is('consultant') ? context.next() : context.next(redirect_route);
 
         default:
           context.next(redirect_route);
