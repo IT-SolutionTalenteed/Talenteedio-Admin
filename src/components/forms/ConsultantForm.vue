@@ -133,6 +133,32 @@
           </div>
         </div>
       </div>
+
+      <!-- CV Section -->
+      <div class="col-md-12 mt-3" v-if="consultant.cvs && consultant.cvs.length > 0">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">CV Documents</h3>
+          </div>
+          <div class="card-body">
+            <div class="list-group">
+              <a
+                v-for="cv in consultant.cvs"
+                :key="cv.id"
+                :href="cv.file?.fileUrl"
+                target="_blank"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+              >
+                <div>
+                  <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
+                  <span>{{ cv.title || cv.file?.fileName || 'CV' }}</span>
+                </div>
+                <i class="bi bi-download"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </form>
 </template>
@@ -249,23 +275,30 @@ const isLoading = ref(false);
 const save = async () => {
   isLoading.value = true;
 
-  if (!consultant.value.category?.id) consultant.value.category = undefined;
+  try {
+    if (!consultant.value.category?.id) consultant.value.category = undefined;
 
-  // Convert empty strings to null for numeric fields
-  const consultantData = {
-    ...consultant.value,
-    yearsOfExperience: consultant.value.yearsOfExperience === '' ? null : Number(consultant.value.yearsOfExperience),
-    tjm: consultant.value.tjm === '' ? null : Number(consultant.value.tjm)
-  };
+    // Prepare consultant data, excluding read-only fields like cvs
+    const { cvs, ...consultantDataWithoutCvs } = consultant.value;
+    
+    // Convert empty strings to null for numeric fields
+    const consultantData = {
+      ...consultantDataWithoutCvs,
+      yearsOfExperience: consultant.value.yearsOfExperience === '' ? null : Number(consultant.value.yearsOfExperience),
+      tjm: consultant.value.tjm === '' ? null : Number(consultant.value.tjm)
+    };
 
-  const { data: newData } = props.id
-    ? await updateConsultant(consultantData)
-    : await createConsultant(consultantData);
+    const result = props.id
+      ? await updateConsultant(consultantData)
+      : await createConsultant(consultantData);
 
-  if (newData?.result?.id) {
-    router.push({ name: 'consultant.list' });
+    if (result?.data?.result?.id) {
+      router.push({ name: 'consultant.list' });
+    }
+  } catch (error) {
+    console.error('Error saving consultant:', error);
+  } finally {
+    isLoading.value = false;
   }
-
-  isLoading.value = false;
 };
 </script>

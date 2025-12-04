@@ -77,6 +77,15 @@ export const getOneConsultant = async (id: string) => {
           id
           name
         }
+        cvs {
+          id
+          title
+          file {
+            id
+            fileUrl
+            fileName
+          }
+        }
       }
     }
   `;

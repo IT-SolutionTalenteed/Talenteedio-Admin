@@ -248,6 +248,19 @@ if (is('admin')) {
       icon: 'bi bi-bag-check'
     }
   ];
+} else if (is('consultant')) {
+  sideNav = [
+    {
+      label: 'Profile',
+      route: { name: 'profile' },
+      icon: 'bi bi-person'
+    },
+    {
+      label: 'Tarifs',
+      route: { name: 'pricing' },
+      icon: 'bi bi-currency-euro'
+    }
+  ];
 } else if (is('referral')) {
   sideNav = [
     {

@@ -55,6 +55,8 @@ import AdList from './views/ad/AdList.vue';
 import InterviewList from './views/interview/InterviewList.vue';
 import InterviewForm from './views/interview/InterviewForm.vue';
 import ValueList from './views/value/ValueList.vue';
+import PricingList from './views/pricing/PricingList.vue';
+import PricingForm from './views/pricing/PricingForm.vue';
 
 const routes: RouteRecordRaw = {
   path: '',
@@ -590,6 +592,31 @@ const routes: RouteRecordRaw = {
           path: ':id',
           name: 'application.detail',
           component: ApplicationDetail
+        }
+      ]
+    },
+    {
+      path: 'pricing',
+      name: 'pricing',
+      redirect: { name: 'pricing.list' },
+      meta: {
+        middleware: [access('consultant')]
+      },
+      children: [
+        {
+          path: '',
+          name: 'pricing.list',
+          component: PricingList
+        },
+        {
+          path: 'add',
+          name: 'pricing.add',
+          component: PricingForm
+        },
+        {
+          path: 'edit/:id',
+          name: 'pricing.edit',
+          component: PricingForm
         }
       ]
     }
