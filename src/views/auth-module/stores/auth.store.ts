@@ -92,33 +92,43 @@ export const useAuthStore = defineStore(
 
       isLoading.value = true;
 
-      const { data, error } = await login(payload);
+      try {
+        const { data, error } = await login(payload);
 
-      if (data && data.user) {
-        setAuth(data.user, data.accessToken, data.refreshToken);
+        if (data && data.user) {
+          setAuth(data.user, data.accessToken, data.refreshToken);
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Message',
-          text: 'Authentification successful',
-          toast: true,
-          position: 'bottom-right',
-          showConfirmButton: false,
-          timer: 3000 // Adjust the duration as needed
-        });
+          Swal.fire({
+            icon: 'success',
+            title: 'Message',
+            text: 'Authentification successful',
+            toast: true,
+            position: 'bottom-right',
+            showConfirmButton: false,
+            timer: 3000 // Adjust the duration as needed
+          });
 
-        await router.replace('/');
-      } else if (error && error.response) {
+          await router.replace('/');
+        } else if (error) {
+          resetAuth();
+
+          Swal.fire({
+            icon: 'error',
+            title: error.response?.statusText || 'Erreur',
+            text: error.response?.data?.msg || error.response?.message || 'Email ou mot de passe incorrect'
+          });
+        }
+      } catch (err) {
         resetAuth();
-
+        
         Swal.fire({
           icon: 'error',
-          title: error.response.statusText,
-          text: error.response.data.msg ?? error.response.message
+          title: 'Erreur',
+          text: 'Une erreur est survenue lors de la connexion'
         });
+      } finally {
+        isLoading.value = false;
       }
-
-      isLoading.value = false;
     };
 
     const getUser = async () => {

@@ -78,6 +78,41 @@
                 v-model="consultant.tjm"
               />
             </div>
+            
+            <!-- Qualités du consultant -->
+            <div class="col-12 mb-4">
+              <label class="form-label">Qualités professionnelles (max 3)</label>
+              <div class="mb-2">
+                <div class="input-group mb-2" v-for="(quality, index) in consultant.qualities" :key="index">
+                  <input
+                    type="text"
+                    class="form-control"
+                    v-model="consultant.qualities[index]"
+                    placeholder="Ex: Leadership, Stratégie de recherche, Développement professionnel..."
+                    maxlength="50"
+                  />
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-danger"
+                    @click="removeQuality(index)"
+                    v-if="consultant.qualities.length > 1"
+                  >
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+                <button 
+                  type="button" 
+                  class="btn btn-outline-primary btn-sm"
+                  @click="addQuality"
+                  v-if="consultant.qualities.length < 3"
+                >
+                  <i class="bi bi-plus"></i> Ajouter une qualité
+                </button>
+                <small class="form-text text-muted">
+                  Ces qualités seront affichées sur votre profil consultant ({{ consultant.qualities.filter(q => q.trim()).length }}/3)
+                </small>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card-footer d-flex justify-content-end">
@@ -217,7 +252,8 @@ const consultant = ref<any>(
         user: {
           id: undefined
         },
-        tjm: ''
+        tjm: '',
+        qualities: ['']
       }
 );
 
@@ -262,6 +298,11 @@ if (!consultant.value.contact.address.country) {
   consultant.value.contact.address.country = '';
 }
 
+// Initialize qualities if not present
+if (!consultant.value.qualities || consultant.value.qualities.length === 0) {
+  consultant.value.qualities = [''];
+}
+
 const data = await Promise.all([
   getCategories(null, null, null, 'public', 'consultant'),
   is('admin') ? getUsers(null, null, null, undefined, true) : Promise.resolve(undefined)
@@ -272,6 +313,19 @@ const users = data?.[1]?.data?.results?.rows || [];
 
 const isLoading = ref(false);
 
+// Methods for managing qualities
+const addQuality = () => {
+  if (consultant.value.qualities.length < 3) {
+    consultant.value.qualities.push('');
+  }
+};
+
+const removeQuality = (index: number) => {
+  if (consultant.value.qualities.length > 1) {
+    consultant.value.qualities.splice(index, 1);
+  }
+};
+
 const save = async () => {
   isLoading.value = true;
 
@@ -281,11 +335,12 @@ const save = async () => {
     // Prepare consultant data, excluding read-only fields like cvs
     const { cvs, ...consultantDataWithoutCvs } = consultant.value;
     
-    // Convert empty strings to null for numeric fields
+    // Convert empty strings to null for numeric fields and filter qualities
     const consultantData = {
       ...consultantDataWithoutCvs,
       yearsOfExperience: consultant.value.yearsOfExperience === '' ? null : Number(consultant.value.yearsOfExperience),
-      tjm: consultant.value.tjm === '' ? null : Number(consultant.value.tjm)
+      tjm: consultant.value.tjm === '' ? null : Number(consultant.value.tjm),
+      qualities: consultant.value.qualities.filter((q: string) => q.trim() !== '')
     };
 
     const result = props.id

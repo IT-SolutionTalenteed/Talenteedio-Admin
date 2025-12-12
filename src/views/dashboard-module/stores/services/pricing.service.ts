@@ -11,6 +11,8 @@ export const getPricings = async (consultantId: string) => {
           description
           price
           unit
+          duration
+          features
           createdAt
           updatedAt
         }
@@ -33,6 +35,8 @@ export const getOnePricing = async (id: string) => {
         description
         price
         unit
+        duration
+        features
       }
     }
   `;

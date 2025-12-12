@@ -58,6 +58,7 @@ export const getOneConsultant = async (id: string) => {
         yearsOfExperience
         status
         tjm
+        qualities
         user {
           id
           email
