@@ -57,6 +57,7 @@ import InterviewForm from './views/interview/InterviewForm.vue';
 import ValueList from './views/value/ValueList.vue';
 import PricingList from './views/pricing/PricingList.vue';
 import PricingForm from './views/pricing/PricingForm.vue';
+import Wallet from './views/wallet/Wallet.vue';
 
 const routes: RouteRecordRaw = {
   path: '',
@@ -619,6 +620,19 @@ const routes: RouteRecordRaw = {
           component: PricingForm
         }
       ]
+    },
+    {
+      path: 'wallet',
+      name: 'wallet',
+      meta: {
+        middleware: [access('consultant')]
+      },
+      component: Wallet
+    },
+    {
+      path: 'wallet-test',
+      name: 'wallet-test',
+      component: () => import('./views/wallet/WalletTest.vue')
     }
   ]
 };

@@ -259,6 +259,11 @@ if (is('admin')) {
       label: 'Tarifs',
       route: { name: 'pricing' },
       icon: 'bi bi-currency-euro'
+    },
+    {
+      label: 'Portefeuille',
+      route: { name: 'wallet' },
+      icon: 'bi bi-wallet2'
     }
   ];
 } else if (is('referral')) {
