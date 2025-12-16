@@ -58,6 +58,7 @@ import ValueList from './views/value/ValueList.vue';
 import PricingList from './views/pricing/PricingList.vue';
 import PricingForm from './views/pricing/PricingForm.vue';
 import Wallet from './views/wallet/Wallet.vue';
+import CreneauxList from './views/creneaux/CreneauxList.vue';
 
 const routes: RouteRecordRaw = {
   path: '',
@@ -628,6 +629,21 @@ const routes: RouteRecordRaw = {
         middleware: [access('consultant')]
       },
       component: Wallet
+    },
+    {
+      path: 'creneaux',
+      name: 'creneaux',
+      redirect: { name: 'creneaux.list' },
+      meta: {
+        middleware: [access('consultant')]
+      },
+      children: [
+        {
+          path: '',
+          name: 'creneaux.list',
+          component: CreneauxList
+        }
+      ]
     },
     {
       path: 'wallet-test',

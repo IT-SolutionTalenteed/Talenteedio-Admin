@@ -261,6 +261,11 @@ if (is('admin')) {
       icon: 'bi bi-currency-euro'
     },
     {
+      label: 'Créneaux',
+      route: { name: 'creneaux' },
+      icon: 'bi bi-calendar-check'
+    },
+    {
       label: 'Portefeuille',
       route: { name: 'wallet' },
       icon: 'bi bi-wallet2'
