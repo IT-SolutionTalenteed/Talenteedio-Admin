@@ -107,6 +107,20 @@
                         </button>
                       </div>
                     </div>
+
+                    <div class="col-12 mb-3">
+                      <label class="form-label">Lien de réunion</label>
+                      <input
+                        type="url"
+                        class="form-control"
+                        v-model="pricing.meetingLink"
+                        placeholder="Ex: https://meet.google.com/xxx-xxxx-xxx ou https://zoom.us/j/..."
+                      />
+                      <small class="form-hint text-muted">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Ce lien sera envoyé par email au client après confirmation et paiement de la réservation. Il ne sera pas affiché publiquement.
+                      </small>
+                    </div>
                   </div>
                 </div>
                 <div class="card-footer d-flex flex-column flex-sm-row justify-content-between gap-2">
@@ -195,7 +209,8 @@ const pricing = ref({
   price: 0,
   unit: '',
   duration: '',
-  features: ['']
+  features: [''],
+  meetingLink: ''
 });
 
 const consultantName = computed(() => {
@@ -250,7 +265,8 @@ const loadPricing = async () => {
           price: data.price,
           unit: data.unit || '',
           duration: data.duration || '',
-          features: data.features && data.features.length > 0 ? data.features : ['']
+          features: data.features && data.features.length > 0 ? data.features : [''],
+          meetingLink: data.meetingLink || ''
         };
       }
     } catch (error) {

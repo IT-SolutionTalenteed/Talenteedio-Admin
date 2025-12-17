@@ -173,23 +173,20 @@
       <div class="col-md-12 mt-3" v-if="consultant.cvs && consultant.cvs.length > 0">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">CV Documents</h3>
+            <h3 class="card-title">CV</h3>
           </div>
-          <div class="card-body">
-            <div class="list-group">
-              <a
-                v-for="cv in consultant.cvs"
-                :key="cv.id"
-                :href="cv.file?.fileUrl"
-                target="_blank"
-                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-              >
-                <div>
-                  <i class="bi bi-file-earmark-pdf text-danger me-2"></i>
-                  <span>{{ cv.title || cv.file?.fileName || 'CV' }}</span>
-                </div>
-                <i class="bi bi-download"></i>
-              </a>
+          <div class="card-body p-0">
+            <!-- PDF Preview -->
+            <div v-if="consultant.cvs[0]?.file?.fileUrl" class="pdf-preview-container">
+              <iframe
+                :src="consultant.cvs[0].file.fileUrl"
+                class="pdf-preview"
+                frameborder="0"
+              ></iframe>
+            </div>
+            <div v-else class="p-3 text-muted text-center">
+              <i class="bi bi-file-earmark-x fs-1"></i>
+              <p class="mb-0 mt-2">Aucun CV disponible</p>
             </div>
           </div>
         </div>
@@ -357,3 +354,29 @@ const save = async () => {
   }
 };
 </script>
+
+
+<style scoped>
+.pdf-preview-container {
+  width: 100%;
+}
+
+.pdf-preview {
+  width: 100%;
+  height: 500px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.pdf-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .pdf-preview {
+    height: 400px;
+  }
+}
+</style>

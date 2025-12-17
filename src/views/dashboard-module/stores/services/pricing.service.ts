@@ -37,6 +37,7 @@ export const getOnePricing = async (id: string) => {
         unit
         duration
         features
+        meetingLink
       }
     }
   `;
