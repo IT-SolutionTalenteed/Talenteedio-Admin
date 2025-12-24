@@ -49,7 +49,7 @@ export const useAuthStore = defineStore(
         !is('hr-first-club') &&
         !is('consultant')
       ) {
-        window.location.href = import.meta.env.VITE_HOST_URL + '/admin/authentication/sign-in';
+        window.location.href = '/authentication/sign-in';
         return;
       }
 
@@ -209,7 +209,7 @@ export const useAuthStore = defineStore(
           timer: 3000 // Adjust the duration as needed
         });
 
-        window.location.href = import.meta.env.VITE_HOST_URL + '/admin/authentication/sign-in';
+        window.location.href = '/authentication/sign-in';
       } else {
         isLoading.value = false;
       }

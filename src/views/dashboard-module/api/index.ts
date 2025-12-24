@@ -35,7 +35,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Nettoyer localStorage directement
       localStorage.removeItem('auth');
-      window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
+      window.location.href = '/authentication/sign-in';
     }
     
     return Promise.reject(error);

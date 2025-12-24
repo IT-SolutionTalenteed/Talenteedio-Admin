@@ -66,7 +66,7 @@ authApi.interceptors.response.use(null, async (error) => {
     });
 
     resetAuth();
-    window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
+    window.location.href = '/authentication/sign-in';
   }
 
   return Promise.reject(error);

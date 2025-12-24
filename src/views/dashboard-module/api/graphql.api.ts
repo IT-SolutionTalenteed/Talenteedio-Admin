@@ -56,7 +56,7 @@ export const sendGraphQLRequest = async (
           });
 
           resetAuth();
-          window.location.href = import.meta.env.VITE_HOST_URL + '/authentication/sign-in';
+          window.location.href = '/authentication/sign-in';
         } else if ([500].includes(error.extensions?.statusCode)) {
           // Cas spécial pour matchCVWithJob/cv matcher, message plus informatif
           if (query?.loc?.source?.body?.includes('matchCVWithJob')) {

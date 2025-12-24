@@ -100,9 +100,7 @@ export const auth = async (context: Context) => {
   }
 
   console.log('[AUTH MIDDLEWARE] Authentication failed, redirecting to sign-in');
-  window.location.href = import.meta.env.VITE_HOST_URL + '/admin/authentication/sign-in';
-
-  return context.next(false);
+  return context.next({ name: 'sign-in' });
 };
 
 export const access = (roleAllowed: string) => {
