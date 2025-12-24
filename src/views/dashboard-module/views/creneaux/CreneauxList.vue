@@ -169,7 +169,13 @@
                   </button>
                 </div>
                 <div v-else>
-                  <div v-for="booking in selectedDay.bookings" :key="booking.id" class="booking-card mb-2">
+                  <div 
+                    v-for="booking in selectedDay.bookings" 
+                    :key="booking.id" 
+                    class="booking-card mb-2"
+                    :class="{ 'clickable': booking.pricing?.meetingLink }"
+                    @click="openMeetingLink(booking)"
+                  >
                     <div class="d-flex justify-content-between align-items-start">
                       <div>
                         <div class="fw-bold">{{ booking.clientName }}</div>
@@ -185,9 +191,13 @@
                       <div class="small">{{ booking.serviceTitle }}</div>
                       <div class="small text-muted">{{ booking.frequency || 'Session unique' }}</div>
                     </div>
-                    <div class="mt-2">
+                    <div class="mt-2 d-flex justify-content-between align-items-center">
                       <span class="badge" :class="getStatusClass(booking.status)">
                         {{ getStatusLabel(booking.status) }}
+                      </span>
+                      <span v-if="booking.pricing?.meetingLink" class="text-primary small">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>
+                        Rejoindre
                       </span>
                     </div>
                   </div>
@@ -387,6 +397,11 @@ const currentPeriodLabel = computed(() => {
   }
 })
 
+// Filtrer uniquement les réservations confirmées
+const confirmedBookings = computed(() => 
+  bookings.value.filter(b => b.status === 'confirmed')
+)
+
 const monthWeeks = computed(() => {
   const year = currentDate.value.getFullYear()
   const month = currentDate.value.getMonth()
@@ -405,7 +420,7 @@ const monthWeeks = computed(() => {
       date.setDate(currentWeekStart.getDate() + i)
       
       const dateStr = date.toISOString().split('T')[0]
-      const dayBookings = bookings.value.filter(b => b.bookingDate === dateStr)
+      const dayBookings = confirmedBookings.value.filter(b => b.bookingDate === dateStr)
       const isBlocked = blockedDates.value.some(bd => bd.date === dateStr)
       
       week.push({
@@ -439,7 +454,7 @@ const weekDays = computed(() => {
       date: dateStr,
       day: date.getDate(),
       dayName: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
-      bookings: bookings.value.filter(b => b.bookingDate === dateStr)
+      bookings: confirmedBookings.value.filter(b => b.bookingDate === dateStr)
     })
   }
   
@@ -465,13 +480,14 @@ const canBlock = computed(() => {
 })
 
 const stats = computed(() => {
-  const totalBookings = bookings.value.length
-  const totalRevenue = bookings.value.reduce((sum, b) => sum + Number(b.amount), 0)
+  // Utiliser uniquement les réservations confirmées pour les statistiques
+  const totalBookings = confirmedBookings.value.length
+  const totalRevenue = confirmedBookings.value.reduce((sum, b) => sum + Number(b.amount), 0)
   const blockedDatesCount = blockedDates.value.length
   
   // Calculer les créneaux disponibles (approximatif)
   const totalSlots = 30 * 10 // 30 jours * 10 créneaux par jour
-  const bookedSlots = bookings.value.length
+  const bookedSlots = confirmedBookings.value.length
   const blockedSlots = blockedDatesCount * 10
   const availableSlots = totalSlots - bookedSlots - blockedSlots
   
@@ -707,6 +723,12 @@ function getStatusLabel(status: string): string {
   return labels[status as keyof typeof labels] || status
 }
 
+function openMeetingLink(booking: any) {
+  if (booking.pricing?.meetingLink) {
+    window.open(booking.pricing.meetingLink, '_blank')
+  }
+}
+
 onMounted(async () => {
   await creneauxStore.fetchBookings()
   await creneauxStore.fetchBlockedDates()
@@ -823,6 +845,17 @@ onMounted(async () => {
   border-radius: 4px;
   padding: 12px;
   background-color: #f8f9fa;
+  transition: all 0.2s;
+}
+
+.booking-card.clickable {
+  cursor: pointer;
+}
+
+.booking-card.clickable:hover {
+  background-color: #e3f2fd;
+  border-color: #2196f3;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
 }
 
 .booking-info {
