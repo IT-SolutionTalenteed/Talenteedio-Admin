@@ -2,12 +2,18 @@
   <div>
     <div class="form-label" :class="{ required }">{{ label }}</div>
     <select
+      ref="selectElement"
       class="form-select select-multiples"
       v-model="selected"
       :multiple="multiple"
       :required="required"
     >
-      <option :value="option.value" v-for="option in dataOptions" :key="option.value">
+      <option 
+        :value="option.value" 
+        v-for="option in dataOptions" 
+        :key="option.value"
+        :data-logo="option.logo"
+      >
         {{ option.label }}
       </option>
     </select>
@@ -15,13 +21,9 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, nextTick, watch, ref as vueRef } from 'vue';
 
 import loadscript from '@/composables/loadscript';
-
-onMounted(() => {
-  loadscript({ src: '/admin/dist/js/inputs/selectMultiple.js', loadtime: 'once' });
-});
 
 interface Props {
   label?: string;
@@ -48,6 +50,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['update:modelValue']);
 
+const selectElement = vueRef<HTMLSelectElement | null>(null);
+
 const dataOptions = computed(() => props.options.map((obj) => props.normalizer(obj)));
 
 const selected = computed({
@@ -69,4 +73,42 @@ const selected = computed({
         : value
     )
 });
+
+const initializeTomSelect = async () => {
+  await nextTick();
+  
+  // Destroy existing instance if any
+  if (selectElement.value && (selectElement.value as any).tomselect) {
+    (selectElement.value as any).tomselect.destroy();
+  }
+  
+  // Load CSS
+  const cssLink = document.querySelector('link[href="/dist/css/inputs/selectMultiple.css"]');
+  if (!cssLink) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/dist/css/inputs/selectMultiple.css';
+    document.head.appendChild(link);
+  }
+  
+  // Load JS and initialize
+  await loadscript({ src: '/dist/js/inputs/selectMultiple.js', loadtime: 'once' });
+  
+  // Wait a bit for script to execute
+  await new Promise(resolve => setTimeout(resolve, 150));
+  
+  // Initialize TomSelect for this specific element
+  if (window.initializeTomSelect && selectElement.value) {
+    window.initializeTomSelect('.select-multiples');
+  }
+};
+
+onMounted(async () => {
+  await initializeTomSelect();
+});
+
+// Reinitialize when options change
+watch(() => props.options, async () => {
+  await initializeTomSelect();
+}, { deep: true });
 </script>

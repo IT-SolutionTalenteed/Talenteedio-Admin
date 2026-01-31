@@ -171,12 +171,22 @@ if (is('admin')) {
           route: { name: 'article' }
         },
         {
+          label: 'Article category',
+          route: { name: 'article.category' }
+        }
+      ]
+    },
+    {
+      label: 'Event',
+      icon: 'bi bi-calendar-event',
+      children: [
+        {
           label: 'Events',
           route: { name: 'event' }
         },
         {
-          label: 'Article category',
-          route: { name: 'article.category' }
+          label: 'Event category',
+          route: { name: 'event.category' }
         }
       ]
     },

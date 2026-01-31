@@ -38,12 +38,44 @@
                   v-model="event.metaDescription"
                 />
               </div>
-              <div class="col-md-12 mt-4">
+              <div class="col-md-6 mt-4">
                 <DateInput
                   label="Date"
                   :required="true"
                   placeholder="Add date"
                   v-model="event.date"
+                />
+              </div>
+              <div class="col-md-3 mt-4">
+                <TextInput
+                  label="Start Time"
+                  placeholder="14:00"
+                  v-model="event.startTime"
+                  type="time"
+                />
+              </div>
+              <div class="col-md-3 mt-4">
+                <TextInput
+                  label="End Time"
+                  placeholder="18:00"
+                  v-model="event.endTime"
+                  type="time"
+                />
+              </div>
+              <div class="col-md-8 mt-4">
+                <TextInput
+                  label="Location"
+                  placeholder="Event venue or address"
+                  v-model="event.location"
+                />
+              </div>
+              <div class="col-md-4 mt-4">
+                <TextInput
+                  label="Max Participants"
+                  placeholder="100"
+                  v-model="event.maxParticipants"
+                  type="number"
+                  :required="false"
                 />
               </div>
               <div class="col-md-12 mt-4">
@@ -84,6 +116,9 @@
 
         <div class="col-md-12 mt-4">
           <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Category</h3>
+            </div>
             <div class="card-body">
               <div class="row">
                 <div class="col-md-12">
@@ -95,10 +130,41 @@
                         value: obj.id
                       };
                     }"
-                    :multiple="true"
-                    v-model="event.categories"
-                    label="Categories"
+                    :multiple="false"
+                    v-model="event.category"
+                    label="Event Category"
+                    placeholder="Choose a category"
                   />
+                  <small class="text-muted">Category for this event (optional)</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 mt-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Participating Companies</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <MultiSelectInput
+                    :options="companies"
+                    :normalizer="(obj: any) => {
+                      return {
+                        label: obj.company_name,
+                        value: obj.id,
+                        logo: obj.logo?.fileUrl
+                      };
+                    }"
+                    :multiple="true"
+                    v-model="event.companies"
+                    label="Select Companies"
+                    placeholder="Choose participating companies"
+                  />
+                  <small class="text-muted">Companies that will participate in this event</small>
                 </div>
               </div>
             </div>
@@ -124,6 +190,7 @@ import DateInput from '@/components/inputs/DateInput.vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import { getCategories } from '../../stores/services/category.service';
+import { getCompanies } from '../../stores/services/company.service';
 import { createEvent, getEvent, updateEvent } from '../../stores/services/event.service';
 
 import { createSafeUrlFromTitle } from '@/utils/helpers';
@@ -143,7 +210,12 @@ const event = ref<any>(
         metaDescription: '',
         status: 'public',
         date: '',
-        categories: [] as any
+        startTime: '',
+        endTime: '',
+        location: '',
+        maxParticipants: '',
+        category: null,
+        companies: [] as any
       }
 );
 
@@ -159,18 +231,37 @@ if (id.value && !event.value) {
   router.push({ name: 'event.add' });
 }
 
-const data = (await getCategories(null, null, null, 'public', 'event')).data;
+const categoriesData = (await getCategories(null, null, null, 'public', 'event')).data;
+const categories = categoriesData?.results?.rows || [];
 
-const categories = data?.results?.rows || [];
+const companiesData = (await getCompanies(null, null, null, 'public')).data;
+const companies = companiesData?.results?.rows || [];
+
+// Debug: Log companies with logos
+console.log('Companies data:', companies.map(c => ({ 
+  name: c.company_name, 
+  logo: c.logo?.fileUrl 
+})));
 
 const isLoading = ref(false);
 
 const save = async () => {
   isLoading.value = true;
 
+  // Préparer les données en nettoyant les valeurs vides
+  const eventData = {
+    ...event.value,
+    maxParticipants: event.value.maxParticipants === '' || event.value.maxParticipants === null 
+      ? null 
+      : parseInt(event.value.maxParticipants, 10),
+    startTime: event.value.startTime || null,
+    endTime: event.value.endTime || null,
+    location: event.value.location || null
+  };
+
   const { data: newData } = id.value
-    ? await updateEvent(event.value)
-    : await createEvent(event.value);
+    ? await updateEvent(eventData)
+    : await createEvent(eventData);
 
   if (newData?.result?.id) {
     router.push({ name: 'event.list' });

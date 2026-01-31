@@ -99,8 +99,8 @@ export const auth = async (context: Context) => {
     }
   }
 
-  console.log('[AUTH MIDDLEWARE] Authentication failed, redirecting to sign-in');
-  return context.next({ name: 'sign-in' });
+  console.log('[AUTH MIDDLEWARE] Authentication failed, redirecting to login');
+  return context.next({ name: 'login' });
 };
 
 export const access = (roleAllowed: string) => {

@@ -17,6 +17,8 @@ import ArticleCategoryList from './views/article/ArticleCategoryList.vue';
 import EventList from './views/event/EventList.vue';
 import EventForm from './views/event/EventForm.vue';
 import EventCategoryList from './views/event/EventCategoryList.vue';
+import EventGroupList from './views/event/EventGroupList.vue';
+import EventGroupForm from './views/event/EventGroupForm.vue';
 import ReferralList from './views/referral/ReferralList.vue';
 import ReferralForm from './views/referral/ReferralForm.vue';
 import ReferralCategoryList from './views/referral/ReferralCategoryList.vue';

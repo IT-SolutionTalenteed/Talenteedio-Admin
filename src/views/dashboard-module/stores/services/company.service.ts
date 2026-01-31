@@ -16,6 +16,9 @@ export const getCompanies = async (
         rows {
           id
           company_name
+          logo {
+            fileUrl
+          }
           contact {
             email
           }

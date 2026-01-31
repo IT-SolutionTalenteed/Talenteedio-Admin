@@ -1,4 +1,4 @@
-import { onBeforeUnmount } from 'vue';
+import { onBeforeUnmount, getCurrentInstance } from 'vue';
 
 export default (args: any) => {
   return new Promise((resolve) => {
@@ -27,12 +27,16 @@ export default (args: any) => {
 
     document.body.appendChild(script);
 
-    onBeforeUnmount(() => {
-      if (notRemoveOnUnmount && document.querySelector(`[src="${src}"]`)) {
-        return;
-      }
+    // Only register cleanup if we're in a component context
+    const instance = getCurrentInstance();
+    if (instance) {
+      onBeforeUnmount(() => {
+        if (notRemoveOnUnmount && document.querySelector(`[src="${src}"]`)) {
+          return;
+        }
 
-      script.remove();
-    });
+        script.remove();
+      });
+    }
   });
 };

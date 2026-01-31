@@ -85,8 +85,17 @@ export const getEvent = async (id: string) => {
         status
         metaDescription
         date
-        categories {
+        startTime
+        endTime
+        location
+        maxParticipants
+        category {
           id
+          name
+        }
+        companies {
+          id
+          company_name
         }
       }
     }
