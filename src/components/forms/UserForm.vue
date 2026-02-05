@@ -31,13 +31,11 @@
         <div class="col-md-6 mb-4">
           <MultiSelectInput
             v-if="is('admin')"
-            :options="['admin', 'other']"
-            :normalizer="(role: any) => {
-              return {
-                label: role,
-                value: role
-              };
-            }"
+            :options="[
+              { label: 'Admin', value: 'admin' },
+              { label: 'Company', value: 'company' }
+            ]"
+            :normalizer="(role: any) => role"
             :required="true"
             :multiple="false"
             v-model="user.role"
@@ -171,7 +169,7 @@ const user = ref<any>(
         firstname: undefined,
         lastname: undefined,
         roles: undefined,
-        role: 'other',
+        role: 'company',
         password: undefined,
         confirmPassword: undefined,
         oldPassword: undefined,
@@ -186,7 +184,7 @@ if (props.id && !user.value) {
   user.value.role =
     user.value.roles && user.value.roles.map((role: any) => role.name).includes('admin')
       ? 'admin'
-      : 'other';
+      : 'company';
   
   // Initialiser l'URL de la photo de profil
   if (user.value.profilePicture) {
@@ -218,10 +216,14 @@ const save = async () => {
   user.value.roles = undefined;
   
   // Préparer les données pour l'envoi
-  const userData = {
-    ...user.value,
-    profilePicture: user.value.profilePictureId ? { id: user.value.profilePictureId } : null
+  const userData: any = {
+    ...user.value
   };
+  
+  // Pour la mise à jour, inclure profilePicture
+  if (props.id) {
+    userData.profilePicture = user.value.profilePictureId ? { id: user.value.profilePictureId } : null;
+  }
   
   // Supprimer les champs temporaires
   delete userData.profilePictureUrl;

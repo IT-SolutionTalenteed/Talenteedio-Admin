@@ -142,7 +142,7 @@
           </div>
         </div>
 
-        <div class="col-md-12 mt-4">
+        <div class="col-md-12 mt-4" v-if="is('admin')">
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">Participating Companies</h3>
@@ -194,9 +194,15 @@ import { getCompanies } from '../../stores/services/company.service';
 import { createEvent, getEvent, updateEvent } from '../../stores/services/event.service';
 
 import { createSafeUrlFromTitle } from '@/utils/helpers';
+import { useAuthStore } from '@/views/auth-module/stores/auth.store';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const route = useRoute();
+
+const authStore = useAuthStore();
+const { is } = authStore;
+const { user } = storeToRefs(authStore);
 
 const id = computed(() => route.params.id as string);
 
@@ -215,7 +221,7 @@ const event = ref<any>(
         location: '',
         maxParticipants: '',
         category: null,
-        companies: [] as any
+        companies: is('company') && user.value?.company ? [{ id: user.value.company.id }] : []
       }
 );
 

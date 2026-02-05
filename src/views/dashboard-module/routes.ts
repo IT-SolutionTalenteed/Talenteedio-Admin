@@ -278,7 +278,7 @@ const routes: RouteRecordRaw = {
       name: 'article',
       redirect: { name: 'article.list' },
       meta: {
-        middleware: [access('admin')]
+        middleware: [access('admin | company')]
       },
       children: [
         {
@@ -290,7 +290,7 @@ const routes: RouteRecordRaw = {
           path: 'add',
           name: 'article.add',
           meta: {
-            middleware: [access('admin')]
+            middleware: [access('admin | company')]
           },
           component: ArticleForm
         },
@@ -298,7 +298,7 @@ const routes: RouteRecordRaw = {
           path: 'edit/:id',
           name: 'article.edit',
           meta: {
-            middleware: [access('admin')]
+            middleware: [access('admin | company')]
           },
           component: ArticleForm
         },
@@ -317,7 +317,7 @@ const routes: RouteRecordRaw = {
       name: 'event',
       redirect: { name: 'event.list' },
       meta: {
-        middleware: [access('admin')]
+        middleware: [access('admin | company')]
       },
       children: [
         {
@@ -328,16 +328,25 @@ const routes: RouteRecordRaw = {
         {
           path: 'add',
           name: 'event.add',
+          meta: {
+            middleware: [access('admin | company')]
+          },
           component: EventForm
         },
         {
           path: 'edit/:id',
           name: 'event.edit',
+          meta: {
+            middleware: [access('admin | company')]
+          },
           component: EventForm
         },
         {
           path: 'category',
           name: 'event.category',
+          meta: {
+            middleware: [access('admin')]
+          },
           component: EventCategoryList
         }
       ]

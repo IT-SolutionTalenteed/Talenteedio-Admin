@@ -120,7 +120,7 @@
                     label="Categories"
                   />
                 </div>
-                <div class="col-md-12 mt-4">
+                <div class="col-md-12 mt-4" v-if="is('admin')">
                   <MultiSelectInput
                     :options="companies"
                     :normalizer="(obj: any) => {
@@ -173,9 +173,15 @@ import { createArticle, getArticle, updateArticle } from '../../stores/services/
 
 import { createSafeUrlFromTitle } from '@/utils/helpers';
 import { getCompanies } from '../../stores/services/company.service';
+import { useAuthStore } from '@/views/auth-module/stores/auth.store';
+import { storeToRefs } from 'pinia';
 
 const router = useRouter();
 const route = useRoute();
+
+const authStore = useAuthStore();
+const { is } = authStore;
+const { user } = storeToRefs(authStore);
 
 const id = computed(() => route.params.id as string);
 
@@ -193,7 +199,7 @@ const article = ref<any>(
         },
         categories: [] as any,
         company: {
-          id: undefined
+          id: is('company') ? user.value?.company?.id : undefined
         },
         isPremium: false
       }

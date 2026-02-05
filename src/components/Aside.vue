@@ -233,6 +233,16 @@ if (is('admin')) {
       label: 'Job',
       route: { name: 'job' },
       icon: 'bi bi-bag'
+    },
+    {
+      label: 'Articles',
+      route: { name: 'article' },
+      icon: 'bi bi-newspaper'
+    },
+    {
+      label: 'Events',
+      route: { name: 'event' },
+      icon: 'bi bi-calendar-event'
     }
   ];
 } else if (is('talent')) {

@@ -6,18 +6,23 @@ export const getEvents = async (
   limit: number | null,
   page: number | null,
   search: string | null,
-  status?: string
+  status?: string,
+  companyId?: string
 ) => {
   const query = gql`
     {
       results: getEvents (input: { limit: ${limit}, page: ${page} }, filter: { title: "${
     search ? search : ''
-  }" , status: "${status ? status : ''}" }) {
+  }" , status: "${status ? status : ''}", companyId: "${companyId ? companyId : ''}" }) {
         rows {
           id
           title
           date
           status
+          company {
+            id
+            company_name
+          }
         } total
       }
     }

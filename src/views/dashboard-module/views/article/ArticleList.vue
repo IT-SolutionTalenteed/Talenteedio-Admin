@@ -2,7 +2,7 @@
   <PageHeader
     title="List of articles"
     page="Articles"
-    :rightButton="is('admin') ? [{ route: 'article.add', label: 'Create' }] : []"
+    :rightButton="is('admin') || is('company') ? [{ route: 'article.add', label: 'Create' }] : []"
   />
 
   <div class="page-body">
@@ -27,8 +27,8 @@
           }
         })
       }"
-      :edit-route="is('admin') ? 'article.edit' : ''"
-      :can-delete="is('admin')"
+      :edit-route="is('admin') || is('company') ? 'article.edit' : ''"
+      :can-delete="is('admin') || is('company')"
       :delete-data="deleteArticle"
     />
   </div>
