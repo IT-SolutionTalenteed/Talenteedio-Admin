@@ -32,6 +32,13 @@ export const getCategories = async (
           status
           model
           slug
+          subtitle
+          description
+          image
+          faq {
+            question
+            answer
+          }
         } total
       }
     }
@@ -95,6 +102,13 @@ export const getCategory = async (id: string) => {
         id
         name
         slug
+        subtitle
+        description
+        image
+        faq {
+          question
+          answer
+        }
         status
       }
     }
