@@ -94,6 +94,7 @@ export const getEvent = async (id: string) => {
         endTime
         location
         maxParticipants
+        image
         category {
           id
           name

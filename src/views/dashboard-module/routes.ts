@@ -60,6 +60,8 @@ import InterviewForm from './views/interview/InterviewForm.vue';
 import ValueList from './views/value/ValueList.vue';
 import PricingList from './views/pricing/PricingList.vue';
 import PricingForm from './views/pricing/PricingForm.vue';
+import CompanyPlansList from './views/company-plan/CompanyPlansList.vue';
+import CompanyPlanForm from './views/company-plan/CompanyPlanForm.vue';
 import Wallet from './views/wallet/Wallet.vue';
 import CreneauxList from './views/creneaux/CreneauxList.vue';
 
@@ -639,6 +641,31 @@ const routes: RouteRecordRaw = {
           path: 'edit/:id',
           name: 'pricing.edit',
           component: PricingForm
+        }
+      ]
+    },
+    {
+      path: 'company-plan',
+      name: 'company-plan',
+      redirect: { name: 'company-plan.list' },
+      meta: {
+        middleware: [access('admin')]
+      },
+      children: [
+        {
+          path: '',
+          name: 'company-plan.list',
+          component: CompanyPlansList
+        },
+        {
+          path: 'add',
+          name: 'company-plan.add',
+          component: CompanyPlanForm
+        },
+        {
+          path: 'edit/:id',
+          name: 'company-plan.edit',
+          component: CompanyPlanForm
         }
       ]
     },

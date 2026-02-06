@@ -82,6 +82,16 @@
                 <div class="form-label required">Content</div>
                 <ckeditor :editor="ClassicEditor" v-model="event.content"></ckeditor>
               </div>
+              <div class="col-md-12 mt-4">
+                <FileInput label="Event Image" v-model="image" />
+                <img
+                  v-if="fileUrl"
+                  class="mt-4"
+                  :src="fileUrl"
+                  style="max-height: 250px; object-fit: cover; width: 100%; border-radius: 8px;"
+                />
+                <small class="text-muted d-block mt-2">Recommended size: 1200 x 600 pixels</small>
+              </div>
             </div>
           </div>
           <div class="card-footer d-flex justify-content-end">
@@ -184,6 +194,7 @@ import TextInput from '@/components/inputs/TextInput.vue';
 import TextAreaInput from '@/components/inputs/TextAreaInput.vue';
 import RadioInput from '@/components/inputs/RadioInput.vue';
 import MultiSelectInput from '@/components/inputs/MultiSelectInput.vue';
+import FileInput from '@/components/inputs/FileInput.vue';
 import SubmitButton from '@/components/inputs/SubmitButton.vue';
 import DateInput from '@/components/inputs/DateInput.vue';
 
@@ -191,6 +202,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import { getCategories } from '../../stores/services/category.service';
 import { getCompanies } from '../../stores/services/company.service';
+import { uploadMedia } from '../../stores/services/media.service';
 import { createEvent, getEvent, updateEvent } from '../../stores/services/event.service';
 
 import { createSafeUrlFromTitle } from '@/utils/helpers';
@@ -220,6 +232,7 @@ const event = ref<any>(
         endTime: '',
         location: '',
         maxParticipants: '',
+        image: '',
         category: null,
         companies: is('company') && user.value?.company ? [{ id: user.value.company.id }] : []
       }
@@ -249,10 +262,30 @@ console.log('Companies data:', companies.map(c => ({
   logo: c.logo?.fileUrl 
 })));
 
+const image = ref(undefined);
+
+const fileUrl = ref(event.value.image);
+
+watch(image, () => {
+  fileUrl.value = undefined;
+});
+
 const isLoading = ref(false);
 
 const save = async () => {
   isLoading.value = true;
+
+  // Upload image if a new one is selected
+  if (image.value) {
+    const { data } = await uploadMedia(image.value);
+
+    if (data && data.result?.fileUrl) {
+      event.value.image = data.result.fileUrl;
+    } else {
+      isLoading.value = false;
+      return;
+    }
+  }
 
   // Préparer les données en nettoyant les valeurs vides
   const eventData = {
@@ -262,7 +295,8 @@ const save = async () => {
       : parseInt(event.value.maxParticipants, 10),
     startTime: event.value.startTime || null,
     endTime: event.value.endTime || null,
-    location: event.value.location || null
+    location: event.value.location || null,
+    image: event.value.image || null
   };
 
   const { data: newData } = id.value

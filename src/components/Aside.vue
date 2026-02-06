@@ -208,6 +208,10 @@ if (is('admin')) {
           route: { name: 'terms' }
         },
         {
+          label: 'Company Plans',
+          route: { name: 'company-plan' }
+        },
+        {
           label: 'Ad',
           route: { name: 'ad' }
         },
