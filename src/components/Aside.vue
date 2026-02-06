@@ -187,6 +187,10 @@ if (is('admin')) {
         {
           label: 'Event category',
           route: { name: 'event.category' }
+        },
+        {
+          label: 'Participation',
+          route: { name: 'event.participation' }
         }
       ]
     },

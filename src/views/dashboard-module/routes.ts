@@ -17,6 +17,7 @@ import ArticleCategoryList from './views/article/ArticleCategoryList.vue';
 import EventList from './views/event/EventList.vue';
 import EventForm from './views/event/EventForm.vue';
 import EventCategoryList from './views/event/EventCategoryList.vue';
+import EventParticipationManagement from './components/EventParticipationManagement.vue';
 import EventGroupList from './views/event/EventGroupList.vue';
 import EventGroupForm from './views/event/EventGroupForm.vue';
 import ReferralList from './views/referral/ReferralList.vue';
@@ -348,6 +349,14 @@ const routes: RouteRecordRaw = {
             middleware: [access('admin')]
           },
           component: EventCategoryList
+        },
+        {
+          path: 'participation',
+          name: 'event.participation',
+          meta: {
+            middleware: [access('admin')]
+          },
+          component: EventParticipationManagement
         }
       ]
     },
