@@ -39,6 +39,15 @@ export const getCategories = async (
             question
             answer
           }
+          gallery
+          testimonials {
+            avatar
+            fullname
+            job
+            avis
+          }
+          video
+          detailList
         } total
       }
     }
@@ -109,6 +118,15 @@ export const getCategory = async (id: string) => {
           question
           answer
         }
+        gallery
+        testimonials {
+          avatar
+          fullname
+          job
+          avis
+        }
+        video
+        detailList
         status
       }
     }

@@ -54,6 +54,123 @@
               />
             </div>
             <div class="mb-4">
+              <label class="form-label">Galerie d'images</label>
+              <input
+                type="file"
+                class="form-control mb-2"
+                accept="image/*"
+                multiple
+                @change="handleGalleryUpload"
+              />
+              <div v-if="category.gallery && category.gallery.length > 0" class="d-flex flex-wrap gap-2 mt-2">
+                <div v-for="(img, index) in category.gallery" :key="index" class="position-relative">
+                  <img
+                    :src="img"
+                    alt="Gallery image"
+                    class="img-thumbnail"
+                    style="max-width: 100px; max-height: 100px; object-fit: cover;"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                    @click="removeGalleryImage(index)"
+                    style="padding: 0.1rem 0.3rem;"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Vidéo</label>
+              <input
+                type="file"
+                class="form-control mb-2"
+                accept="video/*,image/*"
+                @change="handleVideoUpload"
+              />
+              <small class="text-muted d-block mb-2">Uploadez une vidéo ou une image de couverture</small>
+              <div v-if="videoPreview" class="mt-2">
+                <video v-if="isVideoFile(category.video)" controls class="img-thumbnail" style="max-width: 300px;">
+                  <source :src="videoPreview" />
+                </video>
+                <img
+                  v-else
+                  :src="videoPreview"
+                  alt="Video thumbnail"
+                  class="img-thumbnail"
+                  style="max-width: 300px; max-height: 200px; object-fit: cover;"
+                />
+              </div>
+              <TextInput
+                label="Ou URL vidéo YouTube/Vimeo"
+                placeholder="https://www.youtube.com/embed/..."
+                v-model="category.video"
+                class="mt-2"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Liste de détails (checklist)</label>
+              <div v-for="(detail, index) in category.detailList" :key="index" class="mb-2 d-flex gap-2">
+                <TextInput
+                  placeholder="Détail"
+                  v-model="category.detailList[index]"
+                  class="flex-grow-1"
+                />
+                <button type="button" class="btn btn-sm btn-danger" @click="removeDetail(index)">
+                  ×
+                </button>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" @click="addDetail">
+                Ajouter un détail
+              </button>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Témoignages</label>
+              <div v-for="(testimonial, index) in category.testimonials" :key="index" class="mb-3 p-3 border rounded">
+                <div class="mb-2">
+                  <label class="form-label">Avatar</label>
+                  <input
+                    type="file"
+                    class="form-control mb-2"
+                    accept="image/*"
+                    @change="(e) => handleTestimonialAvatarUpload(e, index)"
+                  />
+                  <img
+                    v-if="testimonial.avatar"
+                    :src="testimonial.avatar"
+                    alt="Avatar preview"
+                    class="img-thumbnail mt-2"
+                    style="max-width: 80px; max-height: 80px; object-fit: cover; border-radius: 50%;"
+                  />
+                </div>
+                <TextInput
+                  label="Nom complet"
+                  placeholder="John Doe"
+                  class="mb-2"
+                  v-model="testimonial.fullname"
+                />
+                <TextInput
+                  label="Poste"
+                  placeholder="CEO"
+                  class="mb-2"
+                  v-model="testimonial.job"
+                />
+                <TextAreaInput
+                  label="Avis"
+                  placeholder="Excellent service..."
+                  class="mb-2"
+                  v-model="testimonial.avis"
+                />
+                <button type="button" class="btn btn-sm btn-danger" @click="removeTestimonial(index)">
+                  Supprimer
+                </button>
+              </div>
+              <button type="button" class="btn btn-sm btn-primary" @click="addTestimonial">
+                Ajouter un témoignage
+              </button>
+            </div>
+            <div class="mb-4">
               <label class="form-label">FAQ</label>
               <div v-for="(faqItem, index) in category.faq" :key="index" class="mb-3 p-3 border rounded">
                 <TextInput
@@ -148,6 +265,14 @@ const isSaveLoading = ref(false);
 const isDataLoading = ref(false);
 const imageFile = ref<File | null>(null);
 const imagePreview = ref<string | null>(null);
+const galleryFiles = ref<File[]>([]);
+const videoFile = ref<File | null>(null);
+const videoPreview = ref<string | null>(null);
+
+const isVideoFile = (url: string | undefined) => {
+  if (!url) return false;
+  return url.match(/\.(mp4|webm|ogg|mov)$/i) !== null;
+};
 
 const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -177,6 +302,219 @@ const handleImageUpload = async (event: Event) => {
   reader.readAsDataURL(file);
 };
 
+const handleGalleryUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const files = Array.from(target.files || []);
+  
+  if (files.length === 0) return;
+  
+  // Validate files
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) {
+      alert('Veuillez sélectionner uniquement des images');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La taille de chaque fichier ne doit pas dépasser 5MB');
+      return;
+    }
+  }
+  
+  galleryFiles.value.push(...files);
+  
+  // Upload immediately
+  for (const file of files) {
+    const reader = new FileReader();
+    const base64Data = await new Promise<string>((resolve, reject) => {
+      reader.onload = () => {
+        const result = reader.result as string;
+        const base64 = result.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const uploadResponse = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        file: {
+          name: file.name,
+          data: base64Data,
+          type: file.type,
+        }
+      }),
+      credentials: 'include'
+    });
+
+    if (uploadResponse.ok) {
+      const uploadData = await uploadResponse.json();
+      if (!category.value.gallery) {
+        category.value.gallery = [];
+      }
+      category.value.gallery.push(uploadData.url);
+    } else {
+      alert('Erreur lors de l\'upload d\'une image de la galerie');
+    }
+  }
+  
+  // Reset input
+  target.value = '';
+};
+
+const removeGalleryImage = (index: number) => {
+  category.value.gallery?.splice(index, 1);
+};
+
+const handleVideoUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  
+  if (!file) return;
+  
+  // Validate file type (video or image)
+  if (!file.type.startsWith('video/') && !file.type.startsWith('image/')) {
+    alert('Veuillez sélectionner une vidéo ou une image');
+    return;
+  }
+  
+  // Validate file size (max 50MB for video, 5MB for image)
+  const maxSize = file.type.startsWith('video/') ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    alert(`La taille du fichier ne doit pas dépasser ${file.type.startsWith('video/') ? '50MB' : '5MB'}`);
+    return;
+  }
+  
+  videoFile.value = file;
+  
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    videoPreview.value = e.target?.result as string;
+  };
+  reader.readAsDataURL(file);
+  
+  // Upload immediately
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    const uploadReader = new FileReader();
+    uploadReader.onload = () => {
+      const result = uploadReader.result as string;
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    uploadReader.onerror = reject;
+    uploadReader.readAsDataURL(file);
+  });
+
+  const uploadResponse = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      file: {
+        name: file.name,
+        data: base64Data,
+        type: file.type,
+      }
+    }),
+    credentials: 'include'
+  });
+
+  if (uploadResponse.ok) {
+    const uploadData = await uploadResponse.json();
+    category.value.video = uploadData.url;
+  } else {
+    alert('Erreur lors de l\'upload de la vidéo');
+  }
+  
+  // Reset input
+  target.value = '';
+};
+
+const handleTestimonialAvatarUpload = async (event: Event, index: number) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+  
+  if (!file) return;
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    alert('Veuillez sélectionner une image');
+    return;
+  }
+  
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('La taille du fichier ne doit pas dépasser 5MB');
+    return;
+  }
+  
+  // Upload immediately
+  const reader = new FileReader();
+  const base64Data = await new Promise<string>((resolve, reject) => {
+    reader.onload = () => {
+      const result = reader.result as string;
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const uploadResponse = await fetch(`${import.meta.env.VITE_API_URL}/upload`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      file: {
+        name: file.name,
+        data: base64Data,
+        type: file.type,
+      }
+    }),
+    credentials: 'include'
+  });
+
+  if (uploadResponse.ok) {
+    const uploadData = await uploadResponse.json();
+    if (category.value.testimonials && category.value.testimonials[index]) {
+      category.value.testimonials[index].avatar = uploadData.url;
+    }
+  } else {
+    alert('Erreur lors de l\'upload de l\'avatar');
+  }
+  
+  // Reset input
+  target.value = '';
+};
+
+const addDetail = () => {
+  if (!category.value.detailList) {
+    category.value.detailList = [];
+  }
+  category.value.detailList.push('');
+};
+
+const removeDetail = (index: number) => {
+  category.value.detailList?.splice(index, 1);
+};
+
+const addTestimonial = () => {
+  if (!category.value.testimonials) {
+    category.value.testimonials = [];
+  }
+  category.value.testimonials.push({ avatar: '', fullname: '', job: '', avis: '' });
+};
+
+const removeTestimonial = (index: number) => {
+  category.value.testimonials?.splice(index, 1);
+};
+
 const initialValue = {
   id: undefined,
   name: '',
@@ -185,6 +523,10 @@ const initialValue = {
   description: '',
   image: '',
   faq: [] as { question: string; answer: string }[],
+  gallery: [] as string[],
+  testimonials: [] as { avatar: string; fullname: string; job: string; avis: string }[],
+  video: '',
+  detailList: [] as string[],
   status: 'public',
   model: props.model
 };
@@ -203,6 +545,9 @@ const reset = () => {
   category.value = structuredClone(initialValue);
   imageFile.value = null;
   imagePreview.value = null;
+  galleryFiles.value = [];
+  videoFile.value = null;
+  videoPreview.value = null;
 };
 
 const addFAQ = () => {
@@ -298,6 +643,30 @@ const save = async () => {
       cleanedCategory.faq = validFaq;
     }
 
+    // Ajouter la galerie si elle existe
+    if (category.value.gallery && category.value.gallery.length > 0) {
+      cleanedCategory.gallery = category.value.gallery;
+    }
+
+    // Filtrer les témoignages valides
+    const validTestimonials = category.value.testimonials?.filter(
+      t => t.avatar?.trim() && t.fullname?.trim() && t.job?.trim() && t.avis?.trim()
+    );
+    if (validTestimonials && validTestimonials.length > 0) {
+      cleanedCategory.testimonials = validTestimonials;
+    }
+
+    // Ajouter la vidéo si elle existe
+    if (category.value.video && category.value.video.trim()) {
+      cleanedCategory.video = category.value.video.trim();
+    }
+
+    // Filtrer les détails non vides
+    const validDetails = category.value.detailList?.filter(d => d?.trim());
+    if (validDetails && validDetails.length > 0) {
+      cleanedCategory.detailList = validDetails;
+    }
+
     if (category.value.id) {
       const { data } = await updateCategory(cleanedCategory);
 
@@ -339,12 +708,21 @@ const setCurrentCategory = async (id: string) => {
   if (data?.result) {
     category.value = {
       ...data.result,
-      faq: data.result.faq || []
+      faq: data.result.faq || [],
+      gallery: data.result.gallery || [],
+      testimonials: data.result.testimonials || [],
+      video: data.result.video || '',
+      detailList: data.result.detailList || []
     };
     
     // Set image preview if category has an image
     if (data.result.image) {
       imagePreview.value = data.result.image;
+    }
+    
+    // Set video preview if category has a video
+    if (data.result.video) {
+      videoPreview.value = data.result.video;
     }
   }
 
