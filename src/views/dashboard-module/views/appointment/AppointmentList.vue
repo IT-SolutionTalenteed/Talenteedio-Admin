@@ -611,10 +611,16 @@ const loadAppointments = async () => {
     console.log('Appointments response:', response);
     
     if (isAdmin.value && response.data?.getAllAppointments) {
-      appointments.value = response.data.getAllAppointments;
+      appointments.value = response.data.getAllAppointments.map((apt: any) => ({
+        ...apt,
+        status: apt.status?.toUpperCase() || apt.status
+      }));
       console.log('Admin appointments loaded:', appointments.value.length);
     } else if (!isAdmin.value && response.data?.getMyCompanyAppointments) {
-      appointments.value = response.data.getMyCompanyAppointments;
+      appointments.value = response.data.getMyCompanyAppointments.map((apt: any) => ({
+        ...apt,
+        status: apt.status?.toUpperCase() || apt.status
+      }));
       console.log('Company appointments loaded:', appointments.value.length, appointments.value);
     }
   } catch (error) {
