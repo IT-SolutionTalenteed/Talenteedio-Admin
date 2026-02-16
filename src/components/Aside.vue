@@ -155,6 +155,11 @@ if (is('admin')) {
       ]
     },
     {
+      label: 'Entretiens',
+      route: { name: 'appointments' },
+      icon: 'bi bi-calendar-check'
+    },
+    {
       label: 'Media',
       icon: 'bi bi-mic',
       children: [
@@ -237,6 +242,11 @@ if (is('admin')) {
       label: 'Job',
       route: { name: 'job' },
       icon: 'bi bi-bag'
+    },
+    {
+      label: 'Entretiens',
+      route: { name: 'appointments' },
+      icon: 'bi bi-calendar-check'
     },
     {
       label: 'Articles',

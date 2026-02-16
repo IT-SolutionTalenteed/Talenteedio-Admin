@@ -312,15 +312,15 @@ const save = async () => {
 
   // Préparer les données pour l'envoi
   const companyData = {
-    ...company.value,
-    logo: company.value.logoId ? { id: company.value.logoId } : null
+    id: company.value.id,
+    company_name: company.value.company_name,
+    status: company.value.status,
+    contact: company.value.contact,
+    logo: company.value.logoId ? { id: company.value.logoId } : null,
+    category: company.value.category?.id ? { id: company.value.category.id } : undefined,
+    user: company.value.user?.id ? { id: company.value.user.id } : undefined,
+    permission: company.value.permission?.id ? { id: company.value.permission.id } : undefined
   };
-  
-  // Supprimer les champs temporaires
-  delete companyData.logoUrl;
-  delete companyData.logoId;
-
-  if (!companyData.category?.id) companyData.category = undefined;
 
   const { data: newData } = props.id
     ? await updateCompany(companyData)

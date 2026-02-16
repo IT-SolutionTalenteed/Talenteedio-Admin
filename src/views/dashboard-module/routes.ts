@@ -62,6 +62,7 @@ import CompanyPlansList from './views/company-plan/CompanyPlansList.vue';
 import CompanyPlanForm from './views/company-plan/CompanyPlanForm.vue';
 import Wallet from './views/wallet/Wallet.vue';
 import CreneauxList from './views/creneaux/CreneauxList.vue';
+import AppointmentList from './views/appointment/AppointmentList.vue';
 
 const routes: RouteRecordRaw = {
   path: '',
@@ -670,6 +671,14 @@ const routes: RouteRecordRaw = {
       path: 'wallet-test',
       name: 'wallet-test',
       component: () => import('./views/wallet/WalletTest.vue')
+    },
+    {
+      path: 'appointments',
+      name: 'appointments',
+      meta: {
+        middleware: [access('admin | company')]
+      },
+      component: AppointmentList
     }
   ]
 };
