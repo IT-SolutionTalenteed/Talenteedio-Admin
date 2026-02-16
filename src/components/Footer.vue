@@ -5,7 +5,7 @@
         <div class="col-12 col-lg-auto mt-3 mt-lg-0">
           <ul class="list-inline list-inline-dots mb-0">
             <li class="list-inline-item">
-              Copyright &copy; 2023
+              Copyright &copy; {{ new Date().getFullYear() }}
               <a href="https://solutiontalenteed.com" class="link-secondary">Solution Talenteed</a>
               . All right reserved.
             </li>
