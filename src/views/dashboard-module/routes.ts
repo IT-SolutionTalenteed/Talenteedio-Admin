@@ -28,8 +28,6 @@ import HrFirstClubForm from './views/hrFirstClub/HrFirstClubForm.vue';
 import TalentList from './views/talent/TalentList.vue';
 import TalentForm from './views/talent/TalentForm.vue';
 import TalentCategoryList from './views/talent/TalentCategoryList.vue';
-import FreelanceList from './views/freelance/FreelanceList.vue';
-import FreelanceForm from './views/freelance/FreelanceForm.vue';
 import ConsultantList from './views/consultant/ConsultantList.vue';
 import ConsultantForm from './views/consultant/ConsultantForm.vue';
 import LocationList from './views/location/LocationList.vue';
@@ -226,31 +224,7 @@ const routes: RouteRecordRaw = {
         }
       ]
     },
-    {
-      path: 'freelance',
-      name: 'freelance',
-      redirect: { name: 'freelance.list' },
-      meta: {
-        middleware: [access('admin')]
-      },
-      children: [
-        {
-          path: '',
-          name: 'freelance.list',
-          component: FreelanceList
-        },
-        {
-          path: 'add',
-          name: 'freelance.add',
-          component: FreelanceForm
-        },
-        {
-          path: 'edit/:id',
-          name: 'freelance.edit',
-          component: FreelanceForm
-        }
-      ]
-    },
+
     {
       path: 'consultant',
       name: 'consultant',
