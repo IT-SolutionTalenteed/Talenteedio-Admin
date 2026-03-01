@@ -69,7 +69,7 @@
         </div>
         
         <!-- Taille et dates -->
-        <div class="col-md-4 mb-4">
+        <div class="col-md-6 mb-4">
           <MultiSelectInput
             :options="companySizeOptions"
             :normalizer="(obj: any) => {
@@ -84,56 +84,12 @@
             placeholder="Select company size"
           />
         </div>
-        <div class="col-md-4 mb-4">
-          <TextInput
-            label="Number of employees"
-            placeholder="Exact number"
-            v-model="company.numberOfEmployees"
-            type="number"
-          />
-        </div>
-        <div class="col-md-4 mb-4">
+        <div class="col-md-6 mb-4">
           <TextInput
             label="Founded year"
             placeholder="e.g., 2020"
             v-model="company.foundedYear"
             type="number"
-          />
-        </div>
-        
-        <!-- Localisation -->
-        <div class="col-md-6 mb-4">
-          <TextInput
-            label="Headquarters"
-            placeholder="Add headquarters location"
-            v-model="company.headquarters"
-          />
-        </div>
-        <div class="col-md-6 mb-4">
-          <SelectCountryInput
-            placeholder="Add country"
-            v-model="company.country"
-          />
-        </div>
-        <div class="col-md-6 mb-4">
-          <TextInput
-            label="City"
-            placeholder="Add city"
-            v-model="company.city"
-          />
-        </div>
-        <div class="col-md-6 mb-4">
-          <TextInput
-            label="Address"
-            placeholder="Add address"
-            v-model="company.address"
-          />
-        </div>
-        <div class="col-md-6 mb-4">
-          <TextInput
-            label="Postal code"
-            placeholder="Add postal code"
-            v-model="company.postalCode"
           />
         </div>
         
@@ -222,8 +178,8 @@
         </div>
         
         <!-- Adresse de contact (pour la relation Contact) -->
-        <div class="col-md-12 mb-3">
-          <h6 class="text-muted">Contact Address</h6>
+        <div class="col-md-12 mb-3 mt-3">
+          <h6 class="text-muted">Company Address</h6>
         </div>
         <div class="col-md-6 mb-4">
           <TextInput
@@ -235,7 +191,7 @@
         </div>
         <div class="col-md-6 mb-4">
           <TextInput
-            label="Contact City"
+            label="City"
             :required="true"
             placeholder="Add city"
             v-model="company.contact.address.city"
@@ -243,7 +199,7 @@
         </div>
         <div class="col-md-6 mb-4">
           <TextInput
-            label="Contact Postal code"
+            label="Postal code"
             :required="true"
             placeholder="Add postal code"
             v-model="company.contact.address.postalCode"
@@ -251,15 +207,15 @@
         </div>
         <div class="col-md-6 mb-4">
           <TextInput
-            label="State"
-            placeholder="Add state"
+            label="State/Region"
+            placeholder="Add state or region"
             v-model="company.contact.address.state"
           />
         </div>
         <div class="col-md-6 mb-4">
           <SelectCountryInput
             :required="true"
-            placeholder="Add contact country"
+            placeholder="Add country"
             v-model="company.contact.address.country"
           />
         </div>
@@ -418,17 +374,11 @@ const company = ref<any>(
         slogan: undefined,
         description: undefined,
         about: undefined,
-        headquarters: undefined,
         website: undefined,
         industry: undefined,
         sector: undefined,
         companySize: undefined,
-        numberOfEmployees: undefined,
         foundedYear: undefined,
-        country: undefined,
-        city: undefined,
-        address: undefined,
-        postalCode: undefined,
         profileSought: undefined,
         positionsToFill: undefined,
         requiredSkills: undefined,
@@ -541,6 +491,11 @@ const generatePassword = () => {
   company.value.password = password.split('').sort(() => Math.random() - 0.5).join('');
 };
 
+// Générer automatiquement un mot de passe si on crée une nouvelle company
+if (!props.id && !company.value.password) {
+  generatePassword();
+}
+
 const onLogoChanged = (mediaId: string, fileUrl: string) => {
   company.value.logoId = mediaId;
   company.value.logoUrl = fileUrl;
@@ -557,82 +512,100 @@ const save = async () => {
   try {
     let userId = company.value.user?.id;
 
-    // Si c'est une création, créer d'abord l'utilisateur
-    if (!props.id) {
+    // Récupérer la permission par défaut "Initial Package" pour les nouvelles companies
+    if (!props.id && !company.value.permission?.id && permissions.length > 0) {
+      const initialPermission = permissions.find((p: any) => p.title === 'Initial Package');
+      if (initialPermission) {
+        company.value.permission = { id: initialPermission.id };
+      } else {
+        // Prendre la première permission disponible
+        company.value.permission = { id: permissions[0].id };
+      }
+    }
+
+    // Convertir contractTypesArray en string - FIX: ensure it's always a string
+    let contractTypesString = '';
+    if (Array.isArray(company.value.contractTypesArray)) {
+      contractTypesString = company.value.contractTypesArray
+        .map((item: any) => typeof item === 'string' ? item : item?.name || item?.value || '')
+        .filter((item: string) => item)
+        .join(', ');
+    } else if (typeof company.value.contractTypes === 'string') {
+      contractTypesString = company.value.contractTypes;
+    }
+
+    // Convertir companySize - ensure it's a string
+    let companySizeValue = '';
+    if (company.value.companySize) {
+      if (typeof company.value.companySize === 'object') {
+        companySizeValue = company.value.companySize.value || company.value.companySize.label || '';
+      } else {
+        companySizeValue = String(company.value.companySize);
+      }
+    }
+
+    // Préparer les données pour l'envoi avec tous les champs
+    const companyData: any = {
+      company_name: company.value.company_name,
+      slogan: company.value.slogan || undefined,
+      description: company.value.description || undefined,
+      about: company.value.about || undefined,
+      website: company.value.website || undefined,
+      industry: company.value.industry || undefined,
+      sector: company.value.sector || undefined,
+      companySize: companySizeValue || undefined,
+      foundedYear: company.value.foundedYear ? parseInt(company.value.foundedYear) : undefined,
+      profileSought: company.value.profileSought || undefined,
+      positionsToFill: company.value.positionsToFill || undefined,
+      requiredSkills: company.value.requiredSkills || undefined,
+      requiredExperience: company.value.requiredExperience || undefined,
+      contractTypes: contractTypesString || undefined,
+      workingHours: company.value.workingHours || undefined,
+      socialNetworks: {
+        linkedin: company.value.socialNetworks?.linkedin || undefined,
+        twitter: company.value.socialNetworks?.twitter || undefined,
+        facebook: company.value.socialNetworks?.facebook || undefined
+      },
+      status: company.value.status || 'public',
+      contact: {
+        email: company.value.contact.email,
+        phoneNumber: company.value.contact.phoneNumber,
+        address: {
+          line: company.value.contact.address.line,
+          city: company.value.contact.address.city,
+          country: company.value.contact.address.country,
+          postalCode: company.value.contact.address.postalCode,
+          state: company.value.contact.address.state || undefined
+        }
+      },
+      logo: company.value.logoId ? { id: company.value.logoId } : undefined,
+      category: company.value.category?.id ? { id: company.value.category.id } : undefined,
+      permission: company.value.permission?.id ? { id: company.value.permission.id } : undefined
+    };
+
+    // Pour la création, passer les données utilisateur directement (pas d'ID)
+    // Pour la mise à jour, passer l'ID utilisateur
+    if (props.id) {
+      companyData.id = company.value.id;
+      if (userId) {
+        companyData.user = { id: userId };
+      }
+    } else {
+      // Pour la création, passer les données complètes de l'utilisateur
       if (!company.value.password) {
         showToast('Please enter a password or generate one', 'error');
         isLoading.value = false;
         return;
       }
 
-      // Créer l'utilisateur
-      const userData = {
+      companyData.user = {
         email: company.value.contact.email,
         password: company.value.password,
         firstname: company.value.company_name,
         lastname: '',
         role: 'company'
       };
-
-      const { data: userResult } = await createUser(userData);
-      
-      if (!userResult?.result?.id) {
-        showToast('Failed to create user account', 'error');
-        isLoading.value = false;
-        return;
-      }
-
-      userId = userResult.result.id;
-      
-      // Récupérer la permission par défaut "Initial Package"
-      if (!company.value.permission?.id && permissions.length > 0) {
-        const initialPermission = permissions.find((p: any) => p.title === 'Initial Package');
-        if (initialPermission) {
-          company.value.permission = { id: initialPermission.id };
-        } else {
-          // Prendre la première permission disponible
-          company.value.permission = { id: permissions[0].id };
-        }
-      }
     }
-
-    // Convertir contractTypesArray en string
-    const contractTypesString = Array.isArray(company.value.contractTypesArray) 
-      ? company.value.contractTypesArray.join(', ') 
-      : company.value.contractTypes;
-
-    // Préparer les données pour l'envoi avec tous les champs
-    const companyData = {
-      id: company.value.id,
-      company_name: company.value.company_name,
-      slogan: company.value.slogan,
-      description: company.value.description,
-      about: company.value.about,
-      headquarters: company.value.headquarters,
-      website: company.value.website,
-      industry: company.value.industry,
-      sector: company.value.sector,
-      companySize: typeof company.value.companySize === 'object' ? company.value.companySize?.value : company.value.companySize,
-      numberOfEmployees: company.value.numberOfEmployees ? parseInt(company.value.numberOfEmployees) : undefined,
-      foundedYear: company.value.foundedYear ? parseInt(company.value.foundedYear) : undefined,
-      country: company.value.country,
-      city: company.value.city,
-      address: company.value.address,
-      postalCode: company.value.postalCode,
-      profileSought: company.value.profileSought,
-      positionsToFill: company.value.positionsToFill,
-      requiredSkills: company.value.requiredSkills,
-      requiredExperience: company.value.requiredExperience,
-      contractTypes: contractTypesString,
-      workingHours: company.value.workingHours,
-      socialNetworks: company.value.socialNetworks,
-      status: company.value.status,
-      contact: company.value.contact,
-      logo: company.value.logoId ? { id: company.value.logoId } : null,
-      category: company.value.category?.id ? { id: company.value.category.id } : undefined,
-      user: userId ? { id: userId } : undefined,
-      permission: company.value.permission?.id ? { id: company.value.permission.id } : undefined
-    };
 
     const { data: newData } = props.id
       ? await updateCompany(companyData)

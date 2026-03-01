@@ -89,17 +89,11 @@ export const getCompany = async (id: string) => {
         slogan
         description
         about
-        headquarters
         website
         industry
         sector
         companySize
-        numberOfEmployees
         foundedYear
-        country
-        city
-        address
-        postalCode
         profileSought
         positionsToFill
         requiredSkills
