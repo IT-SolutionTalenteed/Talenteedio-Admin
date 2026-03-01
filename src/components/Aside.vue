@@ -280,6 +280,11 @@ if (is('admin')) {
       label: 'Application',
       route: { name: 'application' },
       icon: 'bi bi-bag-check'
+    },
+    {
+      label: 'Entretiens',
+      route: { name: 'appointments' },
+      icon: 'bi bi-calendar-check'
     }
   ];
 } else if (is('consultant')) {

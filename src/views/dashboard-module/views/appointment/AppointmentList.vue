@@ -1,6 +1,6 @@
 <template>
   <div class="container-xl">
-    <PageHeader title="Entretiens" />
+    <PageHeader title="Entretiens" page="Entretiens" />
 
     <div class="page-body">
       <div class="card">
@@ -139,21 +139,16 @@
                   <td>
                     <div class="btn-list flex-nowrap">
                       <button
-                        class="btn btn-sm"
-                        :class="appointment.status === 'PENDING' ? 'btn-primary' : 'btn-ghost-secondary'"
+                        class="btn btn-sm btn-ghost-secondary"
                         @click="viewDetails(appointment)"
-                        :title="appointment.status === 'PENDING' ? 'Répondre' : 'Voir les détails'"
+                        title="Voir les détails"
                       >
-                        <svg v-if="appointment.status === 'PENDING'" xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                          <path d="M9 11l-4 4l4 4m-4 -4h11a4 4 0 0 0 0 -8h-1" />
-                        </svg>
-                        <svg v-else xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                           <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                           <circle cx="12" cy="12" r="2" />
                           <path d="M22 12c-2.667 4.667 -6 7 -10 7s-7.333 -2.333 -10 -7c2.667 -4.667 6 -7 10 -7s7.333 2.333 10 7" />
                         </svg>
-                        {{ appointment.status === 'PENDING' ? 'Répondre' : 'Détails' }}
+                        Détails
                       </button>
                     </div>
                   </td>
@@ -267,7 +262,7 @@
               </div>
             </div>
 
-            <div v-if="selectedAppointment.status === 'PENDING'" class="card card-md bg-light">
+            <div v-if="selectedAppointment.status === 'PENDING' && isCompany" class="card card-md bg-light">
               <div class="card-stamp">
                 <div class="card-stamp-icon bg-warning">
                   <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -397,13 +392,91 @@
                 </div>
               </div>
             </div>
+
+            <!-- Message pour l'admin -->
+            <div v-if="selectedAppointment.status === 'PENDING' && isAdmin" class="alert alert-info" role="alert">
+              <div class="d-flex">
+                <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <circle cx="12" cy="12" r="9" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="alert-title">Entretien en attente</h4>
+                  <div class="text-muted">
+                    Cet entretien est en attente de validation par l'entreprise. En tant qu'administrateur, vous pouvez consulter les détails mais seule l'entreprise peut confirmer ou rejeter la demande.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message pour le talent -->
+            <div v-if="isTalent" class="alert" :class="{
+              'alert-warning': selectedAppointment.status === 'PENDING',
+              'alert-success': selectedAppointment.status === 'CONFIRMED',
+              'alert-danger': selectedAppointment.status === 'REJECTED'
+            }" role="alert">
+              <div class="d-flex">
+                <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <circle cx="12" cy="12" r="9" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="alert-title" v-if="selectedAppointment.status === 'PENDING'">En attente de validation</h4>
+                  <h4 class="alert-title" v-if="selectedAppointment.status === 'CONFIRMED'">Entretien confirmé</h4>
+                  <h4 class="alert-title" v-if="selectedAppointment.status === 'REJECTED'">Demande rejetée</h4>
+                  <div class="text-muted">
+                    <p v-if="selectedAppointment.status === 'PENDING'">
+                      Votre demande d'entretien est en attente de validation par l'entreprise. Vous serez notifié par email dès qu'une décision sera prise.
+                    </p>
+                    <p v-if="selectedAppointment.status === 'CONFIRMED'">
+                      Votre entretien a été confirmé ! Vous recevrez un rappel par email 30 minutes avant le rendez-vous.
+                    </p>
+                    <p v-if="selectedAppointment.status === 'REJECTED'">
+                      Votre demande d'entretien a été rejetée par l'entreprise. Consultez la raison ci-dessus.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn me-auto" @click="closeModal">
-              Annuler
+              {{ isAdmin || isTalent || selectedAppointment?.status !== 'PENDING' ? 'Fermer' : 'Annuler' }}
             </button>
+            
+            <!-- Bouton d'annulation pour le talent -->
             <button
-              v-if="selectedAppointment?.status === 'PENDING'"
+              v-if="isTalent && (selectedAppointment?.status === 'PENDING' || selectedAppointment?.status === 'CONFIRMED')"
+              type="button"
+              class="btn btn-danger"
+              @click="cancelAppointment"
+              :disabled="updating"
+            >
+              <span v-if="updating">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                Annulation...
+              </span>
+              <span v-else>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+                Annuler le rendez-vous
+              </span>
+            </button>
+
+            <!-- Bouton de validation pour la company -->
+            <button
+              v-if="isCompany && selectedAppointment?.status === 'PENDING'"
               type="button"
               class="btn btn-primary btn-lg"
               @click="updateStatus"
@@ -454,6 +527,8 @@ const showModal = ref(false);
 
 // Vérifier si l'utilisateur est admin
 const isAdmin = computed(() => authStore.is('admin'));
+const isTalent = computed(() => authStore.is('talent'));
+const isCompany = computed(() => authStore.is('company'));
 
 const filteredAppointments = computed(() => {
   if (activeTab.value === 'all') {
@@ -542,69 +617,111 @@ const loadAppointments = async () => {
   loading.value = true;
   try {
     // Utiliser une query différente selon le rôle
-    const query = isAdmin.value
-      ? gql`
-          query GetAllAppointments {
-            getAllAppointments {
+    let query;
+    
+    if (isAdmin.value) {
+      // Admin voit tous les entretiens
+      query = gql`
+        query GetAllAppointments {
+          getAllAppointments {
+            id
+            appointmentDate
+            appointmentTime
+            timezone
+            message
+            companyNotes
+            rejectionReason
+            status
+            createdAt
+            user {
               id
-              appointmentDate
-              appointmentTime
-              timezone
-              message
-              companyNotes
-              status
-              createdAt
-              user {
+              email
+              firstname
+              lastname
+            }
+            company {
+              id
+              company_name
+              logo {
                 id
-                email
-                firstname
-                lastname
+                fileUrl
               }
-              company {
-                id
-                company_name
-                logo {
-                  id
-                  fileUrl
-                }
-                contact {
-                  email
-                }
+              contact {
+                email
               }
             }
           }
-        `
-      : gql`
-          query GetMyCompanyAppointments {
-            getMyCompanyAppointments {
+        }
+      `;
+    } else if (isTalent.value) {
+      // Talent voit ses propres entretiens
+      query = gql`
+        query GetMyAppointments {
+          getMyAppointments {
+            id
+            appointmentDate
+            appointmentTime
+            timezone
+            message
+            companyNotes
+            rejectionReason
+            status
+            createdAt
+            user {
               id
-              appointmentDate
-              appointmentTime
-              timezone
-              message
-              companyNotes
-              status
-              createdAt
-              user {
+              email
+              firstname
+              lastname
+            }
+            company {
+              id
+              company_name
+              logo {
                 id
-                email
-                firstname
-                lastname
+                fileUrl
               }
-              company {
-                id
-                company_name
-                logo {
-                  id
-                  fileUrl
-                }
-                contact {
-                  email
-                }
+              contact {
+                email
               }
             }
           }
-        `;
+        }
+      `;
+    } else {
+      // Company voit les entretiens de son entreprise
+      query = gql`
+        query GetMyCompanyAppointments {
+          getMyCompanyAppointments {
+            id
+            appointmentDate
+            appointmentTime
+            timezone
+            message
+            companyNotes
+            rejectionReason
+            status
+            createdAt
+            user {
+              id
+              email
+              firstname
+              lastname
+            }
+            company {
+              id
+              company_name
+              logo {
+                id
+                fileUrl
+              }
+              contact {
+                email
+              }
+            }
+          }
+        }
+      `;
+    }
 
     const response = await sendGraphQLRequest('matching-profile', query);
     
@@ -616,12 +733,18 @@ const loadAppointments = async () => {
         status: apt.status?.toUpperCase() || apt.status
       }));
       console.log('Admin appointments loaded:', appointments.value.length);
-    } else if (!isAdmin.value && response.data?.getMyCompanyAppointments) {
+    } else if (isTalent.value && response.data?.getMyAppointments) {
+      appointments.value = response.data.getMyAppointments.map((apt: any) => ({
+        ...apt,
+        status: apt.status?.toUpperCase() || apt.status
+      }));
+      console.log('Talent appointments loaded:', appointments.value.length);
+    } else if (isCompany.value && response.data?.getMyCompanyAppointments) {
       appointments.value = response.data.getMyCompanyAppointments.map((apt: any) => ({
         ...apt,
         status: apt.status?.toUpperCase() || apt.status
       }));
-      console.log('Company appointments loaded:', appointments.value.length, appointments.value);
+      console.log('Company appointments loaded:', appointments.value.length);
     }
   } catch (error) {
     console.error('Error loading appointments:', error);
@@ -681,6 +804,39 @@ const updateStatus = async () => {
   } catch (error) {
     console.error('Error updating status:', error);
     showToast('Erreur lors de la mise à jour du statut', 'error');
+  } finally {
+    updating.value = false;
+  }
+};
+
+const cancelAppointment = async () => {
+  if (!selectedAppointment.value) return;
+
+  if (!confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
+    return;
+  }
+
+  updating.value = true;
+  try {
+    const mutation = gql`
+      mutation CancelAppointment($appointmentId: ID!) {
+        cancelAppointment(appointmentId: $appointmentId) {
+          id
+          status
+        }
+      }
+    `;
+
+    await sendGraphQLRequest('matching-profile', mutation, {
+      appointmentId: selectedAppointment.value.id
+    });
+
+    showToast('Rendez-vous annulé avec succès', 'success');
+    closeModal();
+    await loadAppointments();
+  } catch (error) {
+    console.error('Error cancelling appointment:', error);
+    showToast('Erreur lors de l\'annulation du rendez-vous', 'error');
   } finally {
     updating.value = false;
   }

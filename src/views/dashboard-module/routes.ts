@@ -676,7 +676,7 @@ const routes: RouteRecordRaw = {
       path: 'appointments',
       name: 'appointments',
       meta: {
-        middleware: [access('admin | company')]
+        middleware: [access('admin | company | talent')]
       },
       component: AppointmentList
     }
