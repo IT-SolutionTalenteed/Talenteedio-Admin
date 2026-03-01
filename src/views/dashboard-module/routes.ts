@@ -67,14 +67,27 @@ import AppointmentList from './views/appointment/AppointmentList.vue';
 const routes: RouteRecordRaw = {
   path: '',
   component: Layout,
-  redirect: { name: 'dashboard' },
+  redirect: (to) => {
+    const authStore = useAuthStore();
+    
+    // Redirection selon le rôle de l'utilisateur
+    if (authStore.is('admin')) {
+      return { name: 'user' };
+    } else if (authStore.is('company')) {
+      return { name: 'profile' };
+    } else if (authStore.is('talent')) {
+      return { name: 'profile' };
+    } else if (authStore.is('consultant')) {
+      return { name: 'profile' };
+    } else if (authStore.is('referral')) {
+      return { name: 'profile' };
+    } else if (authStore.is('hr-first-club')) {
+      return { name: 'profile' };
+    }
+    
+    return { name: 'profile' };
+  },
   children: [
-    {
-      path: '',
-      name: 'dashboard',
-      redirect: { name: 'user' }
-      // component: () => import('./views/Dashboard.vue')
-    },
     {
       path: 'user',
       name: 'user',
