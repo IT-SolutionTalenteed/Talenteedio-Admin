@@ -146,6 +146,9 @@ export const access = (roleAllowed: string) => {
         case 'admin | hr-first-club':
           return is('admin') || is('hr-first-club') ? context.next() : context.next(redirect_route);
 
+        case 'admin | company | talent':
+          return is('admin') || is('company') || is('talent') ? context.next() : context.next(redirect_route);
+
         case 'company | talent | referral':
           return is('talent') || is('referral') || is('company')
             ? context.next()
