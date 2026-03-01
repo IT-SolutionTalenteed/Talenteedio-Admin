@@ -1,5 +1,5 @@
 <template>
-  <div class="container-xl">
+  <div class="container-xl appointment-page">
     <PageHeader title="Entretiens" page="Entretiens" />
 
     <div class="page-body">
@@ -848,6 +848,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.appointment-page {
+  height: auto !important;
+  overflow: visible !important;
+}
+
 .avatar {
   background-size: cover;
   background-position: center;

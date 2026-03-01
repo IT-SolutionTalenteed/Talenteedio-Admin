@@ -35,13 +35,21 @@ isLoading.value = true;
 </script>
 
 <style lang="scss">
-.page-wrapper,
-.page-content {
+.page-wrapper {
   height: 100%;
   overflow: hidden;
+}
+
+.page-content {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   .page-body {
-    overflow: hidden auto;
+    overflow: visible;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 
     .card.flex-grow-1 {
       overflow: hidden auto;
@@ -57,12 +65,6 @@ isLoading.value = true;
       }
     }
   }
-}
-
-.page-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 @media (min-width: 992px) {
