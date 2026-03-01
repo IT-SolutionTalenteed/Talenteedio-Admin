@@ -1,13 +1,13 @@
 <template>
   <PageHeader
-    title="List of users"
-    page="Users"
+    title="List of talents"
+    page="Talents"
     :rightButton="[{ route: 'user.add', label: 'Create' }]"
   />
 
   <div class="page-body">
     <Table
-      :get-data="getUsers"
+      :get-data="getUsersFiltered"
       :data-structure="{ name: 'Name', email: 'Email', roles: 'Roles', createdAt: 'Created at' }"
       :normalizer="(arr: any) => {
           return arr.map((data: any) => {
@@ -33,4 +33,14 @@ import Table from '@/components/Table.vue';
 import { getUsers, deleteUser } from '../../stores/services/user.service';
 
 import { formatDate } from '@/views/dashboard-module/helpers';
+
+// Wrapper function to filter only talents
+const getUsersFiltered = async (
+  limit: number | null,
+  page: number | null,
+  search: string | null,
+  status?: string
+) => {
+  return getUsers(limit, page, search, status, false, ['talent']);
+};
 </script>

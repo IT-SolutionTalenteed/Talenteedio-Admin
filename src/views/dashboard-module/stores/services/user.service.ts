@@ -7,13 +7,23 @@ export const getUsers = async (
   page: number | null,
   search: string | null,
   status?: string,
-  withoutRole = false
+  withoutRole = false,
+  roles?: string[]
 ) => {
+  // Construire le filtre des rôles sans guillemets (ce sont des enums)
+  const rolesFilter = roles && roles.length > 0 ? `roles: [${roles.join(', ')}]` : '';
+  
   const query = gql`
-    {
-      results: getUsers (input: { limit: ${limit}, page: ${page} }, filter: { name: "${
-    search ? search : ''
-  }", email: "${search ? search : ''}", withoutRole: ${withoutRole ? withoutRole : false} }) {
+    query GetUsers {
+      results: getUsers (
+        input: { limit: ${limit}, page: ${page} }, 
+        filter: { 
+          name: "${search ? search : ''}", 
+          email: "${search ? search : ''}", 
+          withoutRole: ${withoutRole ? withoutRole : false}
+          ${rolesFilter ? `, ${rolesFilter}` : ''}
+        }
+      ) {
         rows {
           id
           name
@@ -22,11 +32,13 @@ export const getUsers = async (
             name
           }
           createdAt
-        } total
+        } 
+        total
       }
     }
   `;
 
+  console.log('GraphQL Query:', query.loc?.source.body);
   return sendGraphQLRequest('user', query);
 };
 
