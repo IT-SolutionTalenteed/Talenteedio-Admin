@@ -86,7 +86,33 @@ export const getCompany = async (id: string) => {
         id
         company_name
         status
+        slogan
+        description
+        about
+        headquarters
+        website
+        industry
+        sector
+        companySize
+        numberOfEmployees
+        foundedYear
+        country
+        city
+        address
+        postalCode
+        profileSought
+        positionsToFill
+        requiredSkills
+        requiredExperience
+        contractTypes
+        workingHours
+        socialNetworks {
+          linkedin
+          twitter
+          facebook
+        }
         logo {
+          id
           fileUrl
         }
         category {
@@ -108,4 +134,25 @@ export const getCompany = async (id: string) => {
   `;
 
   return sendGraphQLRequest('user', query);
+};
+
+export const sendCompanyCredentials = async (companyName: string, email: string, password: string) => {
+  const query = gql`
+    mutation sendCompanyCredentials($input: SendCompanyCredentialsInput!) {
+      result: sendCompanyCredentials(input: $input) {
+        success
+        msg
+      }
+    }
+  `;
+
+  const variables = {
+    input: {
+      companyName,
+      email,
+      password
+    }
+  };
+
+  return await sendGraphQLRequest('user', query, variables);
 };
