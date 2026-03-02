@@ -63,6 +63,7 @@ import CompanyPlanForm from './views/company-plan/CompanyPlanForm.vue';
 import Wallet from './views/wallet/Wallet.vue';
 import CreneauxList from './views/creneaux/CreneauxList.vue';
 import AppointmentList from './views/appointment/AppointmentList.vue';
+import FeedbackList from './views/appointment/FeedbackList.vue';
 
 const routes: RouteRecordRaw = {
   path: '',
@@ -692,6 +693,14 @@ const routes: RouteRecordRaw = {
         middleware: [access('admin | company | talent')]
       },
       component: AppointmentList
+    },
+    {
+      path: 'feedbacks',
+      name: 'feedbacks',
+      meta: {
+        middleware: [access('admin')]
+      },
+      component: FeedbackList
     }
   ]
 };

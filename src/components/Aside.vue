@@ -160,6 +160,11 @@ if (is('admin')) {
       icon: 'bi bi-calendar-check'
     },
     {
+      label: 'Feedbacks',
+      route: { name: 'feedbacks' },
+      icon: 'bi bi-chat-dots'
+    },
+    {
       label: 'Media',
       icon: 'bi bi-mic',
       children: [
