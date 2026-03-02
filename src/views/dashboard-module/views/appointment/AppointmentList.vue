@@ -44,6 +44,18 @@
             </li>
             <li class="nav-item" role="presentation">
               <a
+                href="#tabs-completed"
+                class="nav-link"
+                :class="{ active: activeTab === 'completed' }"
+                @click.prevent="activeTab = 'completed'"
+                role="tab"
+              >
+                Terminés
+                <span class="badge bg-info ms-2">{{ completedCount }}</span>
+              </a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a
                 href="#tabs-all"
                 class="nav-link"
                 :class="{ active: activeTab === 'all' }"
@@ -78,6 +90,7 @@
                 {{ activeTab === 'pending' ? 'Aucun entretien en attente de validation' : 
                    activeTab === 'confirmed' ? 'Aucun entretien confirmé' :
                    activeTab === 'rejected' ? 'Aucun entretien rejeté' :
+                   activeTab === 'completed' ? 'Aucun entretien terminé' :
                    'Aucun entretien enregistré' }}
               </p>
             </div>
@@ -259,6 +272,269 @@
                 <span class="badge badge-lg" :class="getStatusClass(selectedAppointment.status)">
                   {{ getStatusLabel(selectedAppointment.status) }}
                 </span>
+              </div>
+            </div>
+
+            <!-- Section Feedback pour les entretiens terminés -->
+            <div v-if="selectedAppointment.status === 'COMPLETED'">
+              <!-- Affichage du feedback pour l'admin -->
+              <div v-if="isAdmin" class="card card-md">
+                <div class="card-header">
+                  <h3 class="card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                      <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" />
+                      <line x1="12" y1="12" x2="12" y2="12.01" />
+                      <line x1="8" y1="12" x2="8" y2="12.01" />
+                      <line x1="16" y1="12" x2="16" y2="12.01" />
+                    </svg>
+                    Feedback du candidat
+                  </h3>
+                </div>
+                <div class="card-body">
+                  <div v-if="selectedAppointment.feedbackSubmitted">
+                    <div class="mb-3">
+                      <label class="form-label">Note</label>
+                      <div class="rating-stars">
+                        <span v-for="i in 5" :key="i" class="star" :class="{ filled: i <= selectedAppointment.candidateRating }">
+                          ★
+                        </span>
+                        <span class="ms-2 text-muted">({{ selectedAppointment.candidateRating }}/5)</span>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Décision</label>
+                      <div>
+                        <span class="badge" :class="selectedAppointment.candidateDecision === 'interested' ? 'bg-success' : selectedAppointment.candidateDecision === 'not_interested' ? 'bg-danger' : 'bg-warning'">
+                          {{ getFeedbackDecisionLabel(selectedAppointment.candidateDecision) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Commentaire</label>
+                      <div class="card">
+                        <div class="card-body">
+                          <p class="text-muted mb-0">{{ selectedAppointment.candidateFeedback }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-muted small">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <circle cx="12" cy="12" r="9" />
+                        <polyline points="12 7 12 12 15 15" />
+                      </svg>
+                      Soumis le {{ formatDate(selectedAppointment.feedbackSubmittedAt) }}
+                    </div>
+                  </div>
+                  <div v-else class="alert alert-warning mb-0">
+                    <div class="d-flex">
+                      <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon alert-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <circle cx="12" cy="12" r="9" />
+                          <line x1="12" y1="8" x2="12" y2="12" />
+                          <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h4 class="alert-title">Feedback en attente</h4>
+                        <div class="text-muted">Le candidat n'a pas encore soumis son feedback pour cet entretien.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Affichage et formulaire de feedback pour le talent -->
+              <div v-if="isTalent">
+                <!-- Feedback déjà soumis -->
+                <div v-if="selectedAppointment.feedbackSubmitted" class="card card-md bg-success-lt">
+                  <div class="card-header">
+                    <h3 class="card-title">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2 text-success" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <polyline points="9 11 12 14 20 6" />
+                        <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+                      </svg>
+                      Votre feedback
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <label class="form-label">Votre note</label>
+                      <div class="rating-stars">
+                        <span v-for="i in 5" :key="i" class="star" :class="{ filled: i <= selectedAppointment.candidateRating }">
+                          ★
+                        </span>
+                        <span class="ms-2 text-muted">({{ selectedAppointment.candidateRating }}/5)</span>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Votre décision</label>
+                      <div>
+                        <span class="badge" :class="selectedAppointment.candidateDecision === 'interested' ? 'bg-success' : selectedAppointment.candidateDecision === 'not_interested' ? 'bg-danger' : 'bg-warning'">
+                          {{ getFeedbackDecisionLabel(selectedAppointment.candidateDecision) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">Votre commentaire</label>
+                      <div class="card">
+                        <div class="card-body">
+                          <p class="text-muted mb-0">{{ selectedAppointment.candidateFeedback }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="text-muted small">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-inline" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <circle cx="12" cy="12" r="9" />
+                        <polyline points="12 7 12 12 15 15" />
+                      </svg>
+                      Soumis le {{ formatDate(selectedAppointment.feedbackSubmittedAt) }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Formulaire de feedback -->
+                <div v-else class="card card-md">
+                  <div class="card-header">
+                    <h3 class="card-title">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                        <path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" />
+                        <line x1="12" y1="12" x2="12" y2="12.01" />
+                        <line x1="8" y1="12" x2="8" y2="12.01" />
+                        <line x1="16" y1="12" x2="16" y2="12.01" />
+                      </svg>
+                      Donnez votre feedback
+                    </h3>
+                  </div>
+                  <div class="card-body">
+                    <p class="text-muted mb-3">Partagez votre expérience avec cette entreprise pour nous aider à améliorer nos services.</p>
+                    
+                    <div class="mb-3">
+                      <label class="form-label required">Comment évaluez-vous cet entretien ?</label>
+                      <div class="rating-input">
+                        <span
+                          v-for="i in 5"
+                          :key="i"
+                          class="star clickable"
+                          :class="{ filled: i <= feedbackRating }"
+                          @click="feedbackRating = i"
+                          @mouseover="hoverRating = i"
+                          @mouseleave="hoverRating = 0"
+                        >
+                          ★
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label required">Êtes-vous intéressé par cette opportunité ?</label>
+                      <div class="form-selectgroup form-selectgroup-boxes d-flex flex-column">
+                        <label class="form-selectgroup-item flex-fill">
+                          <input type="radio" name="decision" value="interested" class="form-selectgroup-input" v-model="feedbackDecision">
+                          <div class="form-selectgroup-label d-flex align-items-center p-3">
+                            <div class="me-3">
+                              <span class="form-selectgroup-check"></span>
+                            </div>
+                            <div class="form-selectgroup-label-content d-flex align-items-center">
+                              <span class="avatar avatar-sm me-3 bg-success-lt">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon text-success" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <path d="M19.5 13.572l-7.5 7.428l-7.5 -7.428m0 0a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572" />
+                                </svg>
+                              </span>
+                              <div>
+                                <strong>Oui, je suis intéressé(e)</strong>
+                                <div class="text-muted">Je souhaite poursuivre avec cette entreprise</div>
+                              </div>
+                            </div>
+                          </div>
+                        </label>
+                        <label class="form-selectgroup-item flex-fill">
+                          <input type="radio" name="decision" value="not_interested" class="form-selectgroup-input" v-model="feedbackDecision">
+                          <div class="form-selectgroup-label d-flex align-items-center p-3">
+                            <div class="me-3">
+                              <span class="form-selectgroup-check"></span>
+                            </div>
+                            <div class="form-selectgroup-label-content d-flex align-items-center">
+                              <span class="avatar avatar-sm me-3 bg-danger-lt">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon text-danger" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <line x1="18" y1="6" x2="6" y2="18" />
+                                  <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                              </span>
+                              <div>
+                                <strong>Non, je ne suis pas intéressé(e)</strong>
+                                <div class="text-muted">Cette opportunité ne me convient pas</div>
+                              </div>
+                            </div>
+                          </div>
+                        </label>
+                        <label class="form-selectgroup-item flex-fill">
+                          <input type="radio" name="decision" value="maybe" class="form-selectgroup-input" v-model="feedbackDecision">
+                          <div class="form-selectgroup-label d-flex align-items-center p-3">
+                            <div class="me-3">
+                              <span class="form-selectgroup-check"></span>
+                            </div>
+                            <div class="form-selectgroup-label-content d-flex align-items-center">
+                              <span class="avatar avatar-sm me-3 bg-warning-lt">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon text-warning" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                  <circle cx="12" cy="12" r="9" />
+                                  <line x1="12" y1="8" x2="12" y2="12" />
+                                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                              </span>
+                              <div>
+                                <strong>Peut-être</strong>
+                                <div class="text-muted">J'ai besoin de plus d'informations</div>
+                              </div>
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label required">Votre commentaire</label>
+                      <textarea
+                        class="form-control"
+                        v-model="feedbackComment"
+                        rows="4"
+                        placeholder="Partagez votre expérience : points positifs, points à améliorer, impressions générales..."
+                        required
+                      ></textarea>
+                      <small class="form-hint">
+                        Votre feedback nous aide à améliorer nos services et à mieux vous accompagner.
+                      </small>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="btn btn-primary w-100"
+                      @click="submitFeedback"
+                      :disabled="!feedbackRating || !feedbackDecision || !feedbackComment.trim() || submittingFeedback"
+                    >
+                      <span v-if="submittingFeedback">
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        Envoi en cours...
+                      </span>
+                      <span v-else>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                          <path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5" />
+                        </svg>
+                        Envoyer mon feedback
+                      </span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -525,6 +801,13 @@ const companyNotes = ref('');
 const rejectionReason = ref('');
 const showModal = ref(false);
 
+// Feedback form state
+const feedbackRating = ref(0);
+const feedbackDecision = ref('');
+const feedbackComment = ref('');
+const hoverRating = ref(0);
+const submittingFeedback = ref(false);
+
 // Vérifier si l'utilisateur est admin
 const isAdmin = computed(() => authStore.is('admin'));
 const isTalent = computed(() => authStore.is('talent'));
@@ -549,6 +832,10 @@ const confirmedCount = computed(
 
 const rejectedCount = computed(
   () => appointments.value.filter((a) => a.status === 'REJECTED').length
+);
+
+const completedCount = computed(
+  () => appointments.value.filter((a) => a.status === 'COMPLETED').length
 );
 
 const getUserName = (user: any) => {
@@ -613,6 +900,19 @@ const getStatusLabel = (status: string) => {
   }
 };
 
+const getFeedbackDecisionLabel = (decision: string) => {
+  switch (decision) {
+    case 'interested':
+      return 'Intéressé(e)';
+    case 'not_interested':
+      return 'Pas intéressé(e)';
+    case 'maybe':
+      return 'Peut-être';
+    default:
+      return decision;
+  }
+};
+
 const loadAppointments = async () => {
   loading.value = true;
   try {
@@ -633,6 +933,11 @@ const loadAppointments = async () => {
             rejectionReason
             status
             createdAt
+            feedbackSubmitted
+            candidateFeedback
+            candidateDecision
+            candidateRating
+            feedbackSubmittedAt
             user {
               id
               email
@@ -667,6 +972,11 @@ const loadAppointments = async () => {
             rejectionReason
             status
             createdAt
+            feedbackSubmitted
+            candidateFeedback
+            candidateDecision
+            candidateRating
+            feedbackSubmittedAt
             user {
               id
               email
@@ -759,6 +1069,13 @@ const viewDetails = (appointment: any) => {
   newStatus.value = 'confirmed';
   companyNotes.value = appointment.companyNotes || '';
   rejectionReason.value = appointment.rejectionReason || '';
+  
+  // Reset feedback form
+  feedbackRating.value = 0;
+  feedbackDecision.value = '';
+  feedbackComment.value = '';
+  hoverRating.value = 0;
+  
   showModal.value = true;
 };
 
@@ -842,6 +1159,56 @@ const cancelAppointment = async () => {
   }
 };
 
+const submitFeedback = async () => {
+  if (!selectedAppointment.value) return;
+  
+  if (!feedbackRating.value || !feedbackDecision.value || !feedbackComment.value.trim()) {
+    showToast('Veuillez remplir tous les champs', 'error');
+    return;
+  }
+
+  submittingFeedback.value = true;
+  try {
+    const mutation = gql`
+      mutation SubmitAppointmentFeedback($appointmentId: ID!, $feedback: String!, $decision: String!, $rating: Int) {
+        submitAppointmentFeedback(appointmentId: $appointmentId, feedback: $feedback, decision: $decision, rating: $rating) {
+          id
+          feedbackSubmitted
+          candidateFeedback
+          candidateDecision
+          candidateRating
+          feedbackSubmittedAt
+        }
+      }
+    `;
+
+    const variables = {
+      appointmentId: selectedAppointment.value.id,
+      feedback: feedbackComment.value,
+      decision: feedbackDecision.value,
+      rating: feedbackRating.value
+    };
+
+    const response = await sendGraphQLRequest('matching-profile', mutation, variables);
+
+    if (response.data?.submitAppointmentFeedback) {
+      // Update local appointment
+      selectedAppointment.value = {
+        ...selectedAppointment.value,
+        ...response.data.submitAppointmentFeedback
+      };
+      
+      showToast('Feedback envoyé avec succès', 'success');
+      await loadAppointments();
+    }
+  } catch (error) {
+    console.error('Error submitting feedback:', error);
+    showToast('Erreur lors de l\'envoi du feedback', 'error');
+  } finally {
+    submittingFeedback.value = false;
+  }
+};
+
 onMounted(() => {
   loadAppointments();
 });
@@ -877,5 +1244,30 @@ onMounted(() => {
 .modal.show {
   display: block;
   z-index: 1050;
+}
+
+.rating-stars,
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.star {
+  font-size: 1.5rem;
+  color: #ddd;
+}
+
+.star.filled {
+  color: #ffc107;
+}
+
+.star.clickable {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.star.clickable:hover {
+  color: #ffc107;
 }
 </style>
