@@ -165,6 +165,11 @@ if (is('admin')) {
       icon: 'bi bi-chat-dots'
     },
     {
+      label: 'Newsletter',
+      route: { name: 'newsletter' },
+      icon: 'bi bi-envelope'
+    },
+    {
       label: 'Media',
       icon: 'bi bi-mic',
       children: [

@@ -64,6 +64,9 @@ import Wallet from './views/wallet/Wallet.vue';
 import CreneauxList from './views/creneaux/CreneauxList.vue';
 import AppointmentList from './views/appointment/AppointmentList.vue';
 import FeedbackList from './views/appointment/FeedbackList.vue';
+import NewsletterList from './views/newsletter/NewsletterList.vue';
+import NewsletterForm from './views/newsletter/NewsletterForm.vue';
+import NewsletterView from './views/newsletter/NewsletterView.vue';
 
 const routes: RouteRecordRaw = {
   path: '',
@@ -701,6 +704,36 @@ const routes: RouteRecordRaw = {
         middleware: [access('admin')]
       },
       component: FeedbackList
+    },
+    {
+      path: 'newsletter',
+      name: 'newsletter',
+      redirect: { name: 'newsletter.list' },
+      meta: {
+        middleware: [access('admin')]
+      },
+      children: [
+        {
+          path: '',
+          name: 'newsletter.list',
+          component: NewsletterList
+        },
+        {
+          path: 'add',
+          name: 'newsletter.add',
+          component: NewsletterForm
+        },
+        {
+          path: 'edit/:id',
+          name: 'newsletter.edit',
+          component: NewsletterForm
+        },
+        {
+          path: 'view/:id',
+          name: 'newsletter.view',
+          component: NewsletterView
+        }
+      ]
     }
   ]
 };
