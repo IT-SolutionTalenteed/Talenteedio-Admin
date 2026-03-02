@@ -120,9 +120,25 @@
           />
         </div>
         
-        <!-- Password for user creation (only on create) -->
+        <!-- User Account Information (only on create) -->
         <div class="col-md-12 mb-3 mt-3" v-if="!props.id">
           <h6 class="text-muted">User Account</h6>
+        </div>
+        <div class="col-md-6 mb-4" v-if="!props.id">
+          <TextInput
+            label="First Name"
+            :required="true"
+            placeholder="Enter first name"
+            v-model="company.firstName"
+          />
+        </div>
+        <div class="col-md-6 mb-4" v-if="!props.id">
+          <TextInput
+            label="Last Name"
+            :required="true"
+            placeholder="Enter last name"
+            v-model="company.lastName"
+          />
         </div>
         <div class="col-md-10 mb-4" v-if="!props.id">
           <TextInput
@@ -386,6 +402,8 @@ const company = ref<any>(
         contractTypes: undefined,
         contractTypesArray: [],
         workingHours: undefined,
+        firstName: undefined,
+        lastName: undefined,
         password: undefined,
         socialNetworks: {
           linkedin: undefined,
@@ -598,11 +616,17 @@ const save = async () => {
         return;
       }
 
+      if (!company.value.firstName || !company.value.lastName) {
+        showToast('Please enter first name and last name', 'error');
+        isLoading.value = false;
+        return;
+      }
+
       companyData.user = {
         email: company.value.contact.email,
         password: company.value.password,
-        firstname: company.value.company_name,
-        lastname: '',
+        firstname: company.value.firstName,
+        lastname: company.value.lastName,
         role: 'company'
       };
     }
