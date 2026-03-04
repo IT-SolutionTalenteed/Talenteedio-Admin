@@ -109,7 +109,7 @@
                   <i class="bi bi-plus"></i> Ajouter une qualité
                 </button>
                 <small class="form-text text-muted">
-                  Ces qualités seront affichées sur votre profil consultant ({{ consultant.qualities.filter(q => q.trim()).length }}/3)
+                  Ces qualités seront affichées sur votre profil consultant ({{ consultant.qualities.filter((q: string) => q.trim()).length }}/3)
                 </small>
               </div>
             </div>

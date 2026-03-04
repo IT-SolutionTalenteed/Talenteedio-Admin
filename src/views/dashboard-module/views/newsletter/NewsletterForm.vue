@@ -1,6 +1,6 @@
 <template>
   <div class="container-xl">
-    <PageHeader :title="isEdit ? 'Modifier la newsletter' : 'Nouvelle newsletter'" />
+    <PageHeader :title="isEdit ? 'Modifier la newsletter' : 'Nouvelle newsletter'" page="newsletter" />
 
     <div class="row">
       <div class="col-md-8">

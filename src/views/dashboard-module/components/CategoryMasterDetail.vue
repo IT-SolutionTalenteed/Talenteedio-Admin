@@ -638,7 +638,7 @@ const save = async () => {
     }
 
     // Filtrer les FAQ vides
-    const validFaq = category.value.faq.filter(f => f.question?.trim() && f.answer?.trim());
+    const validFaq = category.value.faq.filter((f: any) => f.question?.trim() && f.answer?.trim());
     if (validFaq.length > 0) {
       cleanedCategory.faq = validFaq;
     }
@@ -650,7 +650,7 @@ const save = async () => {
 
     // Filtrer les témoignages valides
     const validTestimonials = category.value.testimonials?.filter(
-      t => t.avatar?.trim() && t.fullname?.trim() && t.job?.trim() && t.avis?.trim()
+      (t: any) => t.avatar?.trim() && t.fullname?.trim() && t.job?.trim() && t.avis?.trim()
     );
     if (validTestimonials && validTestimonials.length > 0) {
       cleanedCategory.testimonials = validTestimonials;
@@ -662,7 +662,7 @@ const save = async () => {
     }
 
     // Filtrer les détails non vides
-    const validDetails = category.value.detailList?.filter(d => d?.trim());
+    const validDetails = category.value.detailList?.filter((d: any) => d?.trim());
     if (validDetails && validDetails.length > 0) {
       cleanedCategory.detailList = validDetails;
     }

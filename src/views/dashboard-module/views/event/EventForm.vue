@@ -257,7 +257,7 @@ const companiesData = (await getCompanies(null, null, null, 'public')).data;
 const companies = companiesData?.results?.rows || [];
 
 // Debug: Log companies with logos
-console.log('Companies data:', companies.map(c => ({ 
+console.log('Companies data:', companies.map((c: any) => ({ 
   name: c.company_name, 
   logo: c.logo?.fileUrl 
 })));

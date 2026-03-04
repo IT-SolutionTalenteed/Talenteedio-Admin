@@ -10,6 +10,7 @@ export interface User {
   hrFirstClub: HrFirstClub | null;
   name: string;
   roles: Role[];
+  googleId?: string | null;
 }
 
 export interface Admin {

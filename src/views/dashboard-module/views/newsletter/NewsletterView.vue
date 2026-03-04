@@ -1,6 +1,6 @@
 <template>
   <div class="container-xl">
-    <PageHeader title="Détails de la newsletter" />
+    <PageHeader title="Détails de la newsletter" page="newsletter" />
 
     <div v-if="newsletter" class="row">
       <div class="col-md-8">

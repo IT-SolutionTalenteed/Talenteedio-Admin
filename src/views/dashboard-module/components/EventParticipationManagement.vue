@@ -190,11 +190,11 @@ import api from '../api';
 const activeTab = ref('requests');
 const loadingRequests = ref(false);
 const loadingReservations = ref(false);
-const participationRequests = ref([]);
-const userReservations = ref([]);
-const events = ref([]);
+const participationRequests = ref<any[]>([]);
+const userReservations = ref<any[]>([]);
+const events = ref<any[]>([]);
 const showReviewModal = ref(false);
-const selectedRequest = ref(null);
+const selectedRequest = ref<any>(null);
 const reviewAction = ref('');
 const adminNote = ref('');
 
@@ -361,7 +361,7 @@ async function submitReview() {
       `,
       variables: {
         input: {
-          requestId: selectedRequest.value.id,
+          requestId: selectedRequest.value?.id,
           status: reviewAction.value,
           adminNote: adminNote.value || null
         }
@@ -378,7 +378,7 @@ async function submitReview() {
 }
 
 function getStatusLabel(status: string): string {
-  const labels = {
+  const labels: Record<string, string> = {
     'PENDING': 'En attente',
     'APPROVED': 'Approuvé',
     'REJECTED': 'Refusé'

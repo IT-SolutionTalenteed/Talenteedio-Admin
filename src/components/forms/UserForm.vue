@@ -292,7 +292,7 @@ const linkGoogleAccount = async () => {
   }
 };
 
-const handleGoogleResponse = async (response) => {
+const handleGoogleResponse = async (response: any) => {
   try {
     if (!response.credential) {
       throw new Error('Aucun credential reçu de Google');
