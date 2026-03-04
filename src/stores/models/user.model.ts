@@ -8,6 +8,7 @@ export interface User {
   talent: Talent | null;
   referral: Referral | null;
   hrFirstClub: HrFirstClub | null;
+  consultant?: Consultant | null;
   name: string;
   roles: Role[];
   googleId?: string | null;
@@ -24,6 +25,12 @@ export interface Company {
 
 export interface Talent {
   id: string;
+}
+
+export interface Consultant {
+  id: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface Referral {

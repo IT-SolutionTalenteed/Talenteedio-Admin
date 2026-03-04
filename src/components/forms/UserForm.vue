@@ -270,19 +270,21 @@ const linkGoogleAccount = async () => {
     await loadGoogleAPI();
     
     // Initialiser Google Sign-In
-    window.google.accounts.id.initialize({
-      client_id: '694175521874-pke5utmlb5rmo9ptfqo7t35rvkto4kmk.apps.googleusercontent.com', // Votre Google Client ID
-      callback: handleGoogleResponse
-    });
-    
-    // Déclencher la popup Google
-    window.google.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        isLinkingGoogle.value = false;
-        googleMessage.value = 'Popup Google fermée ou bloquée';
-        googleMessageClass.value = 'alert alert-warning';
-      }
-    });
+    if (window.google) {
+      window.google.accounts.id.initialize({
+        client_id: '694175521874-pke5utmlb5rmo9ptfqo7t35rvkto4kmk.apps.googleusercontent.com', // Votre Google Client ID
+        callback: handleGoogleResponse
+      });
+      
+      // Déclencher la popup Google
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          isLinkingGoogle.value = false;
+          googleMessage.value = 'Popup Google fermée ou bloquée';
+          googleMessageClass.value = 'alert alert-warning';
+        }
+      });
+    }
     
   } catch (error) {
     console.error('Erreur lors de la liaison:', error);

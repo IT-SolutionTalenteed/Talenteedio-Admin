@@ -29,8 +29,8 @@
 import { ref } from 'vue'
 import { walletApi } from './api/wallet.api'
 
-const result = ref(null)
-const error = ref(null)
+const result = ref<any>(null)
+const error = ref<string | null>(null)
 
 const testWalletAPI = async () => {
   try {

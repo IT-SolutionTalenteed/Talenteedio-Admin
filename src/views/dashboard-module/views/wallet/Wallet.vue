@@ -410,7 +410,16 @@ const requestWithdrawal = async () => {
   loading.value = true
   
   try {
-    await walletStore.requestWithdrawal(withdrawalForm.value)
+    // Ensure amount is a number before sending
+    if (withdrawalForm.value.amount === null) {
+      showToast('Veuillez saisir un montant', 'error')
+      return
+    }
+    
+    await walletStore.requestWithdrawal({
+      ...withdrawalForm.value,
+      amount: withdrawalForm.value.amount
+    })
     showToast('Demande de retrait envoyée avec succès', 'success')
     
     // Reset form
