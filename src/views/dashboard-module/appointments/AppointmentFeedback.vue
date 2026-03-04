@@ -93,13 +93,13 @@ const formatDate = (date: string | undefined) => {
   padding: 2rem;
   color: #6c757d;
 
-  i {
+  :is(i) {
     font-size: 3rem;
     margin-bottom: 1rem;
     opacity: 0.5;
   }
 
-  p {
+  :is(p) {
     margin: 0;
     font-style: italic;
   }
@@ -133,7 +133,7 @@ const formatDate = (date: string | undefined) => {
     margin-bottom: 1rem;
     font-weight: 500;
 
-    i {
+    :is(i) {
       font-size: 1.25rem;
     }
 
@@ -165,7 +165,7 @@ const formatDate = (date: string | undefined) => {
       display: flex;
       gap: 0.25rem;
 
-      i {
+      :is(i) {
         color: #ffc107;
         font-size: 1.1rem;
       }
@@ -178,7 +178,7 @@ const formatDate = (date: string | undefined) => {
     border-radius: 6px;
     border: 1px solid #dee2e6;
 
-    p {
+    :is(p) {
       margin: 0;
       line-height: 1.6;
       color: #495057;

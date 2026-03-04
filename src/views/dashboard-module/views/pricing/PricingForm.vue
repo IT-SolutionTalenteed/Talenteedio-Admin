@@ -370,12 +370,12 @@ onMounted(() => {
   align-items: center;
   gap: 0.5rem;
   
-  i {
+  :is(i) {
     color: #4a90e2;
     font-size: 1rem;
   }
   
-  &.price-preview i {
+  &.price-preview :is(i) {
     color: #5cb85c;
   }
 }
@@ -398,7 +398,7 @@ onMounted(() => {
   padding: 1rem;
   margin-bottom: 1rem;
   
-  p {
+  :is(p) {
     color: #2c3e50;
     font-size: 0.85rem;
     line-height: 1.4;
@@ -422,7 +422,7 @@ onMounted(() => {
   color: #2c3e50;
   font-size: 0.8rem;
   
-  i {
+  :is(i) {
     color: #5cb85c;
     font-size: 0.9rem;
     margin-top: 2px;

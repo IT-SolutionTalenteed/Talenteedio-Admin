@@ -749,7 +749,7 @@ function formatDate(date: string): string {
 .modal-body {
   padding: 24px;
 
-  p {
+  :is(p) {
     margin-bottom: 20px;
     line-height: 1.6;
   }

@@ -184,7 +184,7 @@ const removePicture = () => {
         font-size: 80px;
         color: #ccc;
 
-        i {
+        :is(i) {
           font-size: 80px;
         }
       }

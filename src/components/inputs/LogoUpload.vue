@@ -185,7 +185,7 @@ const removeLogo = () => {
         font-size: 60px;
         color: #ccc;
 
-        i {
+        :is(i) {
           font-size: 60px;
         }
       }
