@@ -1,26 +1,24 @@
 #!/bin/bash
+set -e  # stoppe le script si une commande échoue
 
+# Charger NVM et Node
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-nvm use v18.17
+nvm use v18.18   # uniformisation Node
 
-echo "🚀 Deploy Admin..."
+echo "🚀 Deploying Admin dashboard..."
 
+# Pull latest code
 git fetch origin
 git reset --hard origin/main
 git pull origin main
 
-echo "📦 Install deps..."
+# Installer les dépendances
 npm install
 
-echo "🛠 Build admin..."
+# Build Vite/React/Angular admin
+echo "🛠️ Building Admin..."
 npm run build
 
-echo "📂 Deploy to nginx folder..."
-
-sudo rm -rf /var/www/html/back-office/*
-sudo cp -r dist/* /var/www/html/back-office/
-
-echo "✅ Admin deployed!"
-
+echo "✅ Admin deployed successfully!"
