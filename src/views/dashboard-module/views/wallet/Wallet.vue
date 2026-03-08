@@ -418,7 +418,8 @@ const requestWithdrawal = async () => {
     
     await walletStore.requestWithdrawal({
       ...withdrawalForm.value,
-      amount: withdrawalForm.value.amount
+      amount: withdrawalForm.value.amount,
+      method: withdrawalForm.value.method as 'bank_transfer' | 'paypal'
     })
     showToast('Demande de retrait envoyée avec succès', 'success')
     

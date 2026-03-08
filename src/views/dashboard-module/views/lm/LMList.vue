@@ -44,7 +44,7 @@ const { is } = authStore;
 const getData = async (limit: number | null, page: number | null, search: string | null) => {
   const route = useRoute();
   const talentId = route?.query?.talent_id as string | undefined;
-  const freelanceId = route?.query?.freelance_id as string | undefined;
-  return await getLMs(limit, page, search, talentId, freelanceId);
+  // Note: freelanceId parameter removed as getLMs only accepts talentId
+  return await getLMs(limit, page, search, talentId);
 };
 </script>

@@ -43,6 +43,7 @@ const getData = async (
   search: string | null,
   status?: string
 ) => {
-  return await getEventGroups(limit, page, search, status);
+  // Note: status parameter removed as getEventGroups only accepts 3 parameters
+  return await getEventGroups(limit, page, search);
 };
 </script>
