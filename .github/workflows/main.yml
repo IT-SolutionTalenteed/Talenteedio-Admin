@@ -7,17 +7,11 @@ on:
       - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: Connect to Talenteed.io server via SSH
+      - name: Deploy Admin
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_TALENTEED_HOST }}
@@ -25,11 +19,5 @@ jobs:
           password: ${{ secrets.SSH_TALENTEED_PASSWORD }}
           port: ${{ secrets.SSH_TALENTEED_PORT }}
           script: |
-            set -e
-            echo "🚀 Starting Admin deployment..."
             cd /home/talenteedio/sites/Talenteed-Admin/
-            
-            # Utiliser le script normal avec type-check (toutes les erreurs TS sont corrigées)
             ./scripts/deploy_prod.sh
-            
-            echo "✅ Deployment completed!"
