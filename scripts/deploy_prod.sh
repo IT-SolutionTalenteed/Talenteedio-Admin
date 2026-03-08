@@ -19,5 +19,5 @@ npm run build
 
 echo "📂 Deploy to nginx folder..."
 
-echo "✅ Admin deployed! ???"
+echo "✅ Admin deployed!"
 
