@@ -28,4 +28,8 @@ jobs:
             set -e
             echo "🚀 Starting Admin deployment..."
             cd /home/talenteedio/sites/Talenteed-Admin/
+            
+            # Utiliser le script normal avec type-check (toutes les erreurs TS sont corrigées)
             ./scripts/deploy_prod.sh
+            
+            echo "✅ Deployment completed!"
