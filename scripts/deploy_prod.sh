@@ -1,12 +1,12 @@
 #!/bin/bash
-set -e  # stoppe le script si une commande échoue
+# stoppe le script si une commande échoue
 
 # Charger NVM et Node
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 echo "📦 Using Node version:"
-nvm use v18.18 || { echo "❌ Failed to load Node v18.18"; exit 1; }
+nvm use v18.17 || { echo "❌ Failed to load Node v18.18"; exit 1; }
 node --version
 npm --version
 
