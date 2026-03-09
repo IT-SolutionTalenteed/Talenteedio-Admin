@@ -288,7 +288,7 @@
         </div>
         <div class="col-md-6 mb-4">
           <TextInput
-            label="Working hours"
+            label="Working hours/week"
             placeholder="e.g., Full-time, Part-time"
             v-model="company.workingHours"
           />
