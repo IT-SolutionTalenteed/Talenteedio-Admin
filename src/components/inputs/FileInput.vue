@@ -6,6 +6,7 @@
 <script setup lang="ts">
 interface Props {
   label: string;
+  modelValue?: File | undefined;
 }
 
 const emit = defineEmits(['update:modelValue']);

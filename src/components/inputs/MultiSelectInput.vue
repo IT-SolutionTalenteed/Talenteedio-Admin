@@ -8,6 +8,7 @@
       :multiple="multiple"
       :required="required"
     >
+      <option v-if="!multiple && !required" value="">{{ placeholder || 'Select an option' }}</option>
       <option 
         :value="option.value" 
         v-for="option in dataOptions" 
@@ -34,6 +35,7 @@ interface Props {
   subtitle?: string;
   required?: boolean;
   type?: string;
+  placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -55,13 +57,22 @@ const selectElement = vueRef<HTMLSelectElement | null>(null);
 const dataOptions = computed(() => props.options.map((obj) => props.normalizer(obj)));
 
 const selected = computed({
-  get: () =>
-    props.multiple
+  get: () => {
+    if (!props.modelValue) return props.multiple ? [] : '';
+    
+    return props.multiple
       ? props.modelValue?.map((value: any) => value.id)
       : typeof props.modelValue === 'object'
       ? props.modelValue?.id
-      : props.modelValue,
-  set: (value) =>
+      : props.modelValue;
+  },
+  set: (value) => {
+    // Si la valeur est vide (chaîne vide), émettre null pour les relations
+    if (value === '' && props.type === 'relation' && !props.multiple) {
+      emit('update:modelValue', null);
+      return;
+    }
+    
     emit(
       'update:modelValue',
       props.type === 'relation'
@@ -71,7 +82,8 @@ const selected = computed({
             }))
           : { id: value }
         : value
-    )
+    );
+  }
 });
 
 const initializeTomSelect = async () => {

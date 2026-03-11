@@ -1,11 +1,12 @@
 <template>
-  <PageHeader
-    :title="id ? 'Edit event' : 'Add event'"
-    :page="id ? 'Edit' : 'Add'"
-    :breadcrumbs="[{ label: 'Event', route: 'event' }]"
-  />
+  <div>
+    <PageHeader
+      :title="id ? 'Edit event' : 'Add event'"
+      :page="id ? 'Edit' : 'Add'"
+      :breadcrumbs="[{ label: 'Event', route: 'event' }]"
+    />
 
-  <div class="page-body">
+    <div class="page-body">
     <form class="row" @submit.prevent="save">
       <div class="col-md-8">
         <div class="card">
@@ -101,7 +102,7 @@
       </div>
 
       <div class="col-md-4">
-        <div class="col-md-12">
+        <div class="col-md-12 mt-4">
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">Status</h3>
@@ -127,6 +128,26 @@
         <div class="col-md-12 mt-4">
           <div class="card">
             <div class="card-header">
+              <h3 class="card-title">Featured Event</h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-12">
+                  <SwitchInput
+                    label="Mise en avant"
+                    switchLabel="Mettre cet événement en avant"
+                    helpText="Si activé, cet événement sera mis en avant et tous les autres événements seront automatiquement désactivés."
+                    v-model="event.featured"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-12 mt-4">
+          <div class="card">
+            <div class="card-header">
               <h3 class="card-title">Category</h3>
             </div>
             <div class="card-body">
@@ -134,12 +155,7 @@
                 <div class="col-md-12">
                   <MultiSelectInput
                     :options="categories"
-                    :normalizer="(obj: any) => {
-                      return {
-                        label: obj.name,
-                        value: obj.id
-                      };
-                    }"
+                    :normalizer="categoryNormalizer"
                     :multiple="false"
                     v-model="event.category"
                     label="Event Category"
@@ -162,13 +178,7 @@
                 <div class="col-md-12">
                   <MultiSelectInput
                     :options="companies"
-                    :normalizer="(obj: any) => {
-                      return {
-                        label: obj.company_name,
-                        value: obj.id,
-                        logo: obj.logo?.fileUrl
-                      };
-                    }"
+                    :normalizer="companyNormalizer"
                     :multiple="true"
                     v-model="event.companies"
                     label="Select Companies"
@@ -182,6 +192,7 @@
         </div>
       </div>
     </form>
+  </div>
   </div>
 </template>
 
@@ -197,6 +208,7 @@ import MultiSelectInput from '@/components/inputs/MultiSelectInput.vue';
 import FileInput from '@/components/inputs/FileInput.vue';
 import SubmitButton from '@/components/inputs/SubmitButton.vue';
 import DateInput from '@/components/inputs/DateInput.vue';
+import SwitchInput from '@/components/inputs/SwitchInput.vue';
 
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -233,6 +245,7 @@ const event = ref<any>(
         location: '',
         maxParticipants: '',
         image: '',
+        featured: false,
         category: null,
         companies: is('company') && user.value?.company ? [{ id: user.value.company.id }] : []
       }
@@ -256,11 +269,17 @@ const categories = categoriesData?.results?.rows || [];
 const companiesData = (await getCompanies(null, null, null, 'public')).data;
 const companies = companiesData?.results?.rows || [];
 
-// Debug: Log companies with logos
-console.log('Companies data:', companies.map((c: any) => ({ 
-  name: c.company_name, 
-  logo: c.logo?.fileUrl 
-})));
+// Normalizer functions
+const categoryNormalizer = (obj: any) => ({
+  label: obj.name,
+  value: obj.id
+});
+
+const companyNormalizer = (obj: any) => ({
+  label: obj.company_name,
+  value: obj.id,
+  logo: obj.logo?.fileUrl
+});
 
 const image = ref(undefined);
 
@@ -296,7 +315,8 @@ const save = async () => {
     startTime: event.value.startTime || null,
     endTime: event.value.endTime || null,
     location: event.value.location || null,
-    image: event.value.image || null
+    image: event.value.image || null,
+    category: event.value.category && event.value.category.id ? event.value.category : null
   };
 
   const { data: newData } = id.value

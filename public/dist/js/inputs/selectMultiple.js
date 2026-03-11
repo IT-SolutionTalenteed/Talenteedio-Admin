@@ -38,8 +38,14 @@ window.initializeTomSelect = function(selector) {
       maxItems: isMultiple ? null : 1,
       closeAfterSelect: !isMultiple,
       hidePlaceholder: true,
+      allowEmptyOption: true,
       render: {
         item: function (data, escape) {
+          // Handle empty option
+          if (!data.value || data.value === '') {
+            return `<div class="py-1 text-muted">${escape(data.text)}</div>`;
+          }
+          
           const logo = logoMap[data.value];
           
           if (logo) {
@@ -69,6 +75,11 @@ window.initializeTomSelect = function(selector) {
           return `<div class="py-1">${escape(data.text)}</div>`;
         },
         option: function (data, escape) {
+          // Handle empty option
+          if (!data.value || data.value === '') {
+            return `<div class="py-2 px-2 text-muted" style="cursor: pointer;">${escape(data.text)}</div>`;
+          }
+          
           const logo = logoMap[data.value];
           
           if (logo) {
