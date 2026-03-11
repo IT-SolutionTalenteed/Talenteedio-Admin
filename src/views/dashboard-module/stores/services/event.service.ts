@@ -68,6 +68,7 @@ export const updateEvent = async (event: any) => {
     mutation updateEvent($event: UpdateEventInput) {
       result: updateEvent(input: $event) {
         id
+        featured
       }
     }
   `;
@@ -95,6 +96,7 @@ export const getEvent = async (id: string) => {
         location
         maxParticipants
         image
+        featured
         category {
           id
           name
