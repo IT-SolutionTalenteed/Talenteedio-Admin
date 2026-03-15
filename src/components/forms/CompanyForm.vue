@@ -464,7 +464,7 @@ if (!company.value.socialNetworks) {
 }
 
 const data = await Promise.all([
-  getCategories(null, null, null, 'public', 'company'),
+  getCategories(null, null, null, 'public', 'Job_Talent'),
   is('admin') ? getUsers(null, null, null, undefined, true) : Promise.resolve(undefined),
   is('admin') ? getPermissions(null, null, null) : Promise.resolve(undefined),
   getJobTypes(null, null, null, 'public')

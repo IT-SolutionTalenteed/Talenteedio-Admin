@@ -11,15 +11,19 @@ export const getCategories = async (
   orderBy: string = 'name',
   direction: string = 'asc'
 ) => {
+  // Build input object conditionally
+  const inputFields = [];
+  if (limit !== null) inputFields.push(`limit: ${limit}`);
+  if (page !== null) inputFields.push(`page: ${page}`);
+  if (orderBy !== undefined) inputFields.push(`orderBy: "${orderBy}"`);
+  if (direction !== undefined) inputFields.push(`direction: "${direction}"`);
+  
+  const inputString = inputFields.length > 0 ? `input: { ${inputFields.join(', ')} },` : '';
+
   const query = gql`
     {
       results: getCategories (
-        input: { 
-          limit: ${limit}, 
-          page: ${page},
-          ${orderBy !== undefined ? `orderBy: "${orderBy}",` : ''}
-          ${direction !== undefined ? `direction: "${direction}",` : ''} 
-        }, 
+        ${inputString}
         filter: { 
           name: "${search ? search : ''}", 
           status: "${status ? status : ''}", 
