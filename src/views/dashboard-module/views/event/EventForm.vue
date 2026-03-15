@@ -41,10 +41,18 @@
               </div>
               <div class="col-md-6 mt-4">
                 <DateInput
-                  label="Date"
+                  label="Start Date"
                   :required="true"
-                  placeholder="Add date"
+                  placeholder="Add start date"
                   v-model="event.date"
+                />
+              </div>
+              <div class="col-md-6 mt-4">
+                <DateInput
+                  label="End Date"
+                  :required="false"
+                  placeholder="Add end date"
+                  v-model="event.endDate"
                 />
               </div>
               <div class="col-md-3 mt-4">
@@ -240,6 +248,7 @@ const event = ref<any>(
         metaDescription: '',
         status: 'public',
         date: '',
+        endDate: '',
         startTime: '',
         endTime: '',
         location: '',
