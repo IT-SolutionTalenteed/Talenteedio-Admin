@@ -18,6 +18,7 @@ export const getEvents = async (
           id
           title
           date
+          endDate
           status
           company {
             id
@@ -91,6 +92,7 @@ export const getEvent = async (id: string) => {
         status
         metaDescription
         date
+        endDate
         startTime
         endTime
         location
