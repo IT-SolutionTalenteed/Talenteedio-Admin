@@ -112,6 +112,10 @@ export const getCompany = async (id: string) => {
         category {
           id
         }
+        values {
+          id
+          title
+        }
         contact {
             id email phoneNumber address {
                 line city country postalCode state

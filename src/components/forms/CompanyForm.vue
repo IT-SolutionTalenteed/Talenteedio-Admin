@@ -294,6 +294,24 @@
           />
         </div>
         
+        <!-- Company Values -->
+        <div class="col-md-12 mb-4">
+          <MultiSelectInput
+            :options="values"
+            :normalizer="(obj: any) => {
+              return {
+                label: obj.title,
+                value: obj.id
+              };
+            }"
+            :multiple="true"
+            v-model="company.values"
+            label="Company Values"
+            placeholder="Select company values"
+            hint="Choose the values that best represent your company culture"
+          />
+        </div>
+        
         <!-- Admin only fields - Only show on edit -->
         <div class="col-md-12 mb-3 mt-3" v-if="is('admin') && props.id">
           <h6 class="text-muted">Admin Settings</h6>
@@ -348,6 +366,7 @@ import {
 import { getUsers, createUser } from '@/views/dashboard-module/stores/services/user.service';
 import { getPermissions } from '@/views/dashboard-module/stores/services/company-permission.service';
 import { getJobTypes } from '@/views/dashboard-module/stores/services/job-type.service';
+import { getValues } from '@/views/dashboard-module/stores/services/value.service';
 
 import { useToast } from '@/composables/useToast';
 
@@ -395,6 +414,7 @@ const company = ref<any>(
         sector: undefined,
         companySize: undefined,
         foundedYear: undefined,
+        values: [], // Ajouter les values
         profileSought: undefined,
         positionsToFill: undefined,
         requiredSkills: undefined,
@@ -467,13 +487,15 @@ const data = await Promise.all([
   getCategories(null, null, null, 'public', 'Job_Talent'),
   is('admin') ? getUsers(null, null, null, undefined, true) : Promise.resolve(undefined),
   is('admin') ? getPermissions(null, null, null) : Promise.resolve(undefined),
-  getJobTypes(null, null, null, 'public')
+  getJobTypes(null, null, null, 'public'),
+  getValues(null, null, null, 'public') // Récupérer les values
 ]);
 
 const categories = data[0].data?.results?.rows || [];
 const users = data?.[1]?.data?.results?.rows || [];
 const permissions = data?.[2]?.data?.results?.rows || [];
 const jobTypes = data?.[3]?.data?.results?.rows || [];
+const values = data?.[4]?.data?.results?.rows || [];
 
 // Options pour company size
 const companySizeOptions = [
@@ -579,6 +601,7 @@ const save = async () => {
       requiredExperience: company.value.requiredExperience || undefined,
       contractTypes: contractTypesString || undefined,
       workingHours: company.value.workingHours || undefined,
+      values: company.value.values || [], // Ajouter les values
       socialNetworks: {
         linkedin: company.value.socialNetworks?.linkedin || undefined,
         twitter: company.value.socialNetworks?.twitter || undefined,
